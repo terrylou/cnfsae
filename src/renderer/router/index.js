@@ -5,13 +5,15 @@ Vue.use(Router);
 
 export default new Router({
     routes: [{
-            path: '/images',
-            component: require('@/components/ImagesPage').default
-        },
-        {
-            path: '*',
-            name: 'welcome-page',
-            component: require('@/components/WelcomePage').default
-        }
-    ]
+        path: '/',
+        name: 'welcome-page',
+        component: require('@/components/HomePage').default,
+        children: [{
+            path: 'editor',
+            component: require('@/components/EditorPage').default
+        }, {
+            path: 'about',
+            component: require('@/components/AboutPage').default
+        }]
+    }]
 });
