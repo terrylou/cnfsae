@@ -1,6 +1,6 @@
 <template>
 <div>
-    <v-toolbar color="purple" dark tabs>
+    <v-toolbar color="purple darken-3" dark tabs>
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
 
         <v-toolbar-title centered>{{ title }}</v-toolbar-title>
@@ -47,9 +47,19 @@ export default {
             drawer: null,
             title: '',
             items: [{
-                    title: '编辑',
+                    title: '编辑器',
                     icon: 'edit',
                     target: '/editor'
+                },
+                {
+                    title: '已发布',
+                    icon: 'done_all',
+                    target: '/sent'
+                },
+                {
+                    title: '草稿箱',
+                    icon: 'drafts',
+                    target: '/drafts'
                 },
                 {
                     title: '关于',

@@ -1,6 +1,6 @@
 <template>
 <div>
-    <v-tabs slot="extension" centered color="purple" v-model="tabs" dark slider-color="yellow">
+    <v-tabs slot="extension" centered color="purple darken-3" v-model="tabs" dark slider-color="yellow" fixed-tabs>
         <v-tab v-for="(text, key) in components" :key="key" @click="getForm(key)">
             {{ text }}
         </v-tab>

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import axios from 'axios';
 import Vuetify from 'vuetify';
+import MavonEditor from 'mavon-editor';
 import 'vuetify/dist/vuetify.min.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
@@ -9,6 +10,7 @@ import router from './router';
 import store from './store';
 
 Vue.use(Vuetify);
+Vue.use(MavonEditor);
 if (!process.env.IS_WEB) {
     Vue.use(require('vue-electron'));
 }
