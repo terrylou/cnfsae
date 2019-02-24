@@ -46,6 +46,14 @@ export default {
         onItemRemove(key) {
             this.content.splice(key, 1);
         }
+    },
+    beforeRouteLeave(to, from, next) {
+        if (this.title || this.content.length) {
+            if (!window.confirm('你未保存的内容即将丢失！你确定离开吗？')) {
+                return next(false);
+            }
+        }
+        return next();
     }
 }
 </script>

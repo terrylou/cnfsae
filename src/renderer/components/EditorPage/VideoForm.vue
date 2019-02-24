@@ -21,6 +21,14 @@ export default {
         onSave() {
 
         }
+    },
+    beforeRouteLeave(to, from, next) {
+        if (this.title || this.content) {
+            if (!window.confirm('你未保存的内容即将丢失！你确定离开吗？')) {
+                return next(false);
+            }
+        }
+        return next();
     }
 }
 </script>
