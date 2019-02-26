@@ -62,7 +62,7 @@ export default {
                     target: '/drafts'
                 },
                 {
-                    title: '关于',
+                    title: '设置',
                     icon: 'help',
                     target: '/about'
                 }

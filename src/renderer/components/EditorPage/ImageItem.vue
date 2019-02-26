@@ -8,16 +8,16 @@
                     <v-btn depressed dark small color="red" @click="onRemove">删除</v-btn>
                 </div>
             </v-flex>
-            <v-flex xs2 v-else>
+            <v-flex xs12 v-else @click="onUpload" style="cursor: pointer">
                 <v-card flat>
                     <v-card-text class="px-0 text-xs-center">
-                        <v-icon x-large @click="onUpload">add_box</v-icon>
+                        <v-icon x-large>add_box</v-icon>
                         <p class="caption grey--text text--lighten-1">点击上传图片</p>
                     </v-card-text>
                 </v-card>
             </v-flex>
-            <v-flex xs10 align-end flexbox>
-                <v-textarea v-if="!isNewItem" box no-resize height="100" v-model="item.desc" name="input-7-4" label="图片说明" :value="item.desc" placeholder="请输入图片说明（可选）" counter="200"></v-textarea>
+            <v-flex xs10 align-end flexbox v-if="!isNewItem">
+                <v-textarea box no-resize height="100" v-model="item.desc" name="input-7-4" label="图片说明" :value="item.desc" placeholder="请输入图片说明（可选）" counter="200"></v-textarea>
             </v-flex>
         </v-layout>
     </v-container>
