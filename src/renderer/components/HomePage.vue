@@ -1,5 +1,5 @@
 <template>
-<div>
+<v-app>
     <v-toolbar color="purple darken-3" dark tabs>
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
 
@@ -36,7 +36,7 @@
             </v-list-tile>
         </v-list>
     </v-navigation-drawer>
-</div>
+</v-app>
 </template>
 
 <script>
