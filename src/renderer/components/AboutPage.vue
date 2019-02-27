@@ -2,8 +2,13 @@
 <v-container>
     <v-card>
         <v-img src="http://img.cnfsae.com/logo/NewLogo_TH2_TP_S.png" max-width="250" aspect-ratio="4"></v-img>
+        <v-subheader>图床配置</v-subheader>
         <v-form>
-            <config-form v-for="(item, idx) in channels" :item="item" :options="channels" :key="idx"></config-form>
+            <config-form v-for="(item, idx) in buckets" :item="item" :options="buckets" :key="idx" :params="bktParam"></config-form>
+        </v-form>
+        <v-subheader>渠道配置</v-subheader>
+        <v-form>
+            <config-form v-for="(item, idx) in channels" :item="item" :options="channels" :key="idx" :params="chnParam"></config-form>
             <v-btn color="purple darken-3" dark @click="onSave">保存</v-btn>
         </v-form>
         <v-card-title primary-title>
@@ -19,8 +24,30 @@
 <script>
 import ComfigForm from './AboutPage/ConfigForm.vue';
 import {
-    configs
+    configs,
+    buckets
 } from '../datastore';
+
+const bucketList = [{
+    text: '七牛云',
+    value: 'qiniu'
+}];
+
+const chnList = [{
+        text: '百家号',
+        value: 'baidu'
+    },
+    {
+        text: '企鹅号',
+        value: 'qq'
+    },
+    {
+        text: '头条号',
+        value: 'toutiao'
+    }
+];
+
+const getValue = list => list.reduce((obj, itm) => Object.assign(obj, {[itm.value]: ''}), {});
 
 export default {
     name: 'about-page',
@@ -29,29 +56,40 @@ export default {
     },
     data() {
         return {
-            channels: null
+            channels: null,
+            buckets: null,
+            bktParam: [{
+                    text: 'Access Key',
+                    value: 'accessKey'
+                },
+                {
+                    text: 'Secret Key',
+                    value: 'secretKey'
+                }
+            ],
+            chnParam: [{
+                    text: 'APPID',
+                    value: 'appId'
+                },
+                {
+                    text: 'APP TOKEN',
+                    value: 'appToken'
+                }
+            ]
         }
     },
     methods: {
         fetchData() {
-            return configs.find({}).then(channels =>
-                this.channels = channels.length ? channels : [{
-                    text: '百家号',
-                    value: 'baidu',
-                    appId: '',
-                    appToken: ''
-                }, {
-                    text: '企鹅号',
-                    value: 'qq',
-                    appId: '',
-                    appToken: ''
-                }, {
-                    text: '头条号',
-                    value: 'toutiao',
-                    appId: '',
-                    appToken: ''
-                }]
-            );
+            const params = [getValue(this.chnParam), getValue(this.bktParam)];
+            return window.Promise.all([configs.find({}).then(chns =>
+                this.channels = chns.length
+                    ? chns
+                    : chnList.map(chn => Object.assign({}, chn, params[0], chns.find(ele => ele.value === chn.value)))
+            ), buckets.find({}).then(bkts =>
+                this.buckets = bkts.length
+                    ? bkts
+                    : bucketList.map(bkt => Object.assign({}, bkt, params[1], bkts.find(ele => ele.value === bkt.value)))
+            )])
         },
         onSave() {
             for (let conf of this.channels) {
@@ -59,9 +97,14 @@ export default {
                         value: conf.value
                     }, conf, {
                         upsert: true
-                    })
-                    .then(res => console.log(res))
-                    .catch(err => console.log(err));
+                    });
+            }
+            for (let conf of this.buckets) {
+                buckets.update({
+                        value: conf.value
+                    }, conf, {
+                        upsert: true
+                    });
             }
         }
     },

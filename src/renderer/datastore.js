@@ -11,6 +11,12 @@ export const configs = Datastore.create({
     filename: path.join(remote.app.getPath('userData'), '/configs.db')
 });
 
+// 图床配置
+export const buckets = Datastore.create({
+    autoload: true,
+    filename: path.join(remote.app.getPath('userData'), '/buckets.db')
+});
+
 // Posts
 export const posts = Datastore.create({
     autoload: true,
