@@ -24,8 +24,8 @@ const getConfig = value => configs.findOne({
 const getBucket = value => buckets.findOne({
     value
 }).then(config => {
-    if (!config) {
-        return null;
+    if (!config || !config.accessKey || !config.secretKey) {
+        return window.Promise.reject(new Error('图床参数配置有误'));
     }
     return {
         accessKey: config.accessKey,
@@ -45,7 +45,7 @@ const genUpToken = (accessKey, secretKey, bucket) => {
 
 export const qiniuUpload = function (path) {
     return new window.Promise((resolve, reject) => {
-        getBucket('qiniu').then(res => {
+        return getBucket('qiniu').then(res => {
             const {
                 accessKey,
                 secretKey
@@ -68,7 +68,7 @@ export const qiniuUpload = function (path) {
                     reject(respBody);
                 }
             });
-        });
+        }).catch(err => reject(err));
     });
 };
 

@@ -58,7 +58,7 @@ export default {
                     });
                     promise.then(data => {
                         this.$emit('onItemAdd', this.$props.idx, data);
-                    });
+                    }).catch(err => this.$EventBus.$emit('error', err));
                 }
             });
         },

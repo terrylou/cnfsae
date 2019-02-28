@@ -18,6 +18,7 @@ if (!process.env.IS_WEB) {
 }
 Vue.http = Vue.prototype.$http = axios;
 Vue.db = Vue.prototype.$db = db;
+Vue.EventBus = Vue.prototype.$EventBus = new Vue();
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */

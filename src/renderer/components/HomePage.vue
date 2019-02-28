@@ -29,13 +29,19 @@
                     <v-icon>{{ item.icon }}</v-icon>
                 </v-list-tile-action>
                 <v-list-tile-content>
-                        <v-list-tile-title>
-                            {{ item.title }}
-                        </v-list-tile-title>
+                    <v-list-tile-title>
+                        {{ item.title }}
+                    </v-list-tile-title>
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
     </v-navigation-drawer>
+    <v-snackbar v-model="snackbar" :timeout="timeout">
+        {{ text }}
+        <v-btn color="pink" flat @click="snackbar = false">
+            Close
+        </v-btn>
+    </v-snackbar>
 </v-app>
 </template>
 
@@ -45,6 +51,9 @@ export default {
     data() {
         return {
             drawer: null,
+            snackbar: false,
+            timeout: 2000,
+            text: '',
             title: '',
             items: [{
                     title: '编辑器',
@@ -74,6 +83,12 @@ export default {
             this.title = title;
             this.$router.push(target);
         }
+    },
+    mounted() {
+        this.$EventBus.$on('error', (err) => {
+            this.snackbar = true;
+            this.text = err.message;
+        });
     }
 }
 </script>
