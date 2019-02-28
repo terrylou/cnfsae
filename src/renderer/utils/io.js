@@ -82,8 +82,14 @@ const getAuth = {
 
 export const publishImage = {
     qq(title, content, coverPic, tags) {
-        getAuth.qq().then(token => {
-            return axios.post(images.qq(token, title, content, coverPic));
+        return getAuth.qq().then(token => {
+            return axios.post(images.qq(token, title, content, coverPic)).then(res => {
+                res = res.data;
+                if (!res.code) {
+                    return res.data.article_id;
+                }
+                return window.Promise.reject(new Error(res.msg));
+            });
         });
     },
     baidu(title, photograph) {
