@@ -12,8 +12,8 @@ const domain = 'http://editor.cnfsae.com';
 const getConfig = value => configs.findOne({
     value
 }).then(config => {
-    if (!config) {
-        return null;
+    if (!config || !config.appId || !config.appToken) {
+        return window.Promise.reject(new Error('渠道配置有误'));
     }
     return {
         appId: config.appId,
@@ -93,7 +93,7 @@ export const publishImage = {
         });
     },
     baidu(title, photograph) {
-        getConfig('baidu').then(({
+        return getConfig('baidu').then(({
             appId,
             appToken
         }) => {

@@ -37,9 +37,10 @@ export default {
     },
     methods: {
         onSave() {
-            // publishImage.baidu(this.title, JSON.stringify(this.content));
-            publishImage.qq(this.title, JSON.stringify(this.content), null, this.tags.toString())
+            publishImage.baidu(this.title, JSON.stringify(this.content))
                 .catch(err => this.$EventBus.$emit('error', err));
+            // publishImage.qq(this.title, JSON.stringify(this.content), null, this.tags.toString())
+            //     .catch(err => this.$EventBus.$emit('error', err));
         },
         onItemAdd(key, content) {
             this.content.splice(key, 0, ...content);
