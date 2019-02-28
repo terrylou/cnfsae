@@ -28,6 +28,7 @@
 import {
     remote
 } from 'electron';
+import {qiniuUpload} from '../../utils/io';
 
 const filters = [{
     name: 'Images',
@@ -44,13 +45,20 @@ export default {
                 properties: ['openFile', 'multiSelections'],
             }, filePath => {
                 if (filePath) {
+                    let promise = window.Promise.resolve([]);
                     const item = filePath.map(path => {
-                        return {
-                            src: `file://${path}`,
-                            desc: ''
-                        };
+                        promise = promise.then(data => qiniuUpload(path).then(res => {
+                            const {hash, key, domain} = res;
+                            data.push({
+                                src: `${domain}/${key}`,
+                                desc: ''
+                            });
+                            return data;
+                        }));
                     });
-                    this.$emit('onItemAdd', this.$props.idx, item);
+                    promise.then(data => {
+                        this.$emit('onItemAdd', this.$props.idx, data);
+                    });
                 }
             });
         },

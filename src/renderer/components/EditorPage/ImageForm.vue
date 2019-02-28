@@ -17,6 +17,7 @@
 <script>
 import ImageItem from './ImageItem.vue';
 import draggable from 'vuedraggable';
+import {publishImage} from '../../utils/io';
 
 export default {
     name: 'image-form',
@@ -32,13 +33,7 @@ export default {
     },
     methods: {
         onSave() {
-            const body = JSON.stringify(
-                {
-                    title: this.title,
-                    content: JSON.stringify(this.content)
-                }
-            );
-            console.log(body);
+            publishImage.baidu(this.title, JSON.stringify(this.content));
         },
         onItemAdd(key, content) {
             this.content.splice(key, 0, ...content);
