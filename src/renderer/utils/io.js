@@ -81,7 +81,7 @@ const getAuth = {
 };
 
 export const publishImage = {
-    qq(title, content, coverPic) {
+    qq(title, content, coverPic, tags) {
         getAuth.qq().then(token => {
             return axios.post(images.qq(token, title, content, coverPic));
         });

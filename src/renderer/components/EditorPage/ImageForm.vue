@@ -8,6 +8,7 @@
             </draggable>
             <image-item :idx="content.length" :isNewItem="true" @onItemAdd="onItemAdd"></image-item>
         </div>
+        <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签"></v-combobox>
         <v-btn color="purple lighten-1" dark>存草稿</v-btn>
         <v-btn color="purple darken-3" dark @click="onSave">发布</v-btn>
     </v-form>
@@ -17,7 +18,9 @@
 <script>
 import ImageItem from './ImageItem.vue';
 import draggable from 'vuedraggable';
-import {publishImage} from '../../utils/io';
+import {
+    publishImage
+} from '../../utils/io';
 
 export default {
     name: 'image-form',
@@ -28,12 +31,14 @@ export default {
     data() {
         return {
             title: '',
-            content: []
+            content: [],
+            tags: []
         };
     },
     methods: {
         onSave() {
-            publishImage.baidu(this.title, JSON.stringify(this.content));
+            // publishImage.baidu(this.title, JSON.stringify(this.content));
+            publishImage.qq(this.title, JSON.stringify(this.content), null, this.tags.toString());
         },
         onItemAdd(key, content) {
             this.content.splice(key, 0, ...content);
