@@ -1,7 +1,7 @@
 <template>
 <v-container class="pl-0 pr-0">
-    <v-btn-toggle v-model="selected" multiple light>
-        <v-btn flat v-for="item in sources">
+    <v-btn-toggle multiple light>
+        <v-btn flat v-for="(item, idx) in sources" :key="idx" @click="onClick(item.source)">
             <icon :name="item.source" type="class"></icon>
             <span>{{ item.name }}</span>
         </v-btn>
@@ -16,10 +16,10 @@ import {
 
 export default {
     name: 'sources',
+    props: ['selected'],
     data() {
         return {
-            sources: null,
-            selected: {}
+            sources: null
         }
     },
     created() {
@@ -28,6 +28,9 @@ export default {
     methods: {
         fetchData() {
             return getConfigs().then(sources => this.sources = sources);
+        },
+        onClick(idx) {
+            this.$emit('onUpdateSource', idx);
         }
     },
     watch: {

@@ -9,7 +9,7 @@
             <image-item :idx="content.length" :isNewItem="true" @onItemAdd="onItemAdd"></image-item>
         </div>
         <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
-        <sources></sources>
+        <sources :selected="selected" @onUpdateSource="onUpdateSource"></sources>
         <v-btn color="purple lighten-1" dark>存草稿</v-btn>
         <v-btn color="purple darken-3" dark @click="onSave">发布</v-btn>
     </v-form>
@@ -37,6 +37,7 @@ export default {
             content: [],
             tags: [],
             coverPic: [],
+            selected: {},
             valid: true,
             rules: {
                 title: [
@@ -56,10 +57,22 @@ export default {
                 this.$EventBus.$emit('error', new Error('发布内容有误，请按提示完善后重新发布'));
                 return;
             }
-            // publishImage.baidu(this.title, JSON.stringify(this.content))
-            //     .catch(err => this.$EventBus.$emit('error', err));
-            // publishImage.qq(this.title, JSON.stringify(this.content), null, this.tags.join(','), this.converPic.join(','))
-            //     .catch(err => this.$EventBus.$emit('error', err));
+            const body = {
+                title: this.title,
+                content: JSON.stringify(this.content),
+                tags: this.tags,
+                coverPic: this.coverPic
+            };
+            let promise = window.Promise.resolve();
+            Object.keys(this.selected).map(chn => {
+                if (this.selected[chn]) {
+                    promise = promise.then(() => publishImage[chn](body));
+                }
+            });
+            promise = promise.catch(err => this.$EventBus.$emit('error', err));
+        },
+        onUpdateSource(source) {
+            this.selected[source] = !this.selected[source];
         },
         onItemAdd(key, content) {
             this.content.splice(key, 0, ...content);

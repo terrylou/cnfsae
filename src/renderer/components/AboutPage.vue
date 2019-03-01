@@ -41,10 +41,10 @@ const chnList = [{
         text: '企鹅号',
         value: 'qq'
     },
-    {
-        text: '头条号',
-        value: 'toutiao'
-    }
+    // {
+    //     text: '头条号',
+    //     value: 'toutiao'
+    // }
 ];
 
 const getValue = list => list.reduce((obj, itm) => Object.assign(obj, {[itm.value]: ''}), {});
