@@ -2,8 +2,15 @@
 <v-card flat>
     <v-container fill-height fluid pa-2>
         <v-layout fill-height>
-            <v-flex xs2 v-if="!isNewItem">
-                <v-img contain height="100" :src="item.src"></v-img>
+            <v-flex xs2 v-if="!isNewItem" @click="toggleCover">
+                <v-badge :color="badgeColor" left overlap style="width: 100%">
+                    <template v-slot:badge>
+                        <v-icon dark small>
+                            done
+                        </v-icon>
+                    </template>
+                    <v-img contain height="100" :src="item.src"></v-img>
+                </v-badge>
                 <div class="text-xs-center">
                     <v-btn depressed dark small color="red" @click="onRemove">删除</v-btn>
                 </div>
@@ -28,7 +35,9 @@
 import {
     remote
 } from 'electron';
-import {qiniuUpload} from '../../utils/io';
+import {
+    qiniuUpload
+} from '../../utils/io';
 
 const filters = [{
     name: 'Images',
@@ -37,7 +46,12 @@ const filters = [{
 
 export default {
     name: 'image-item',
-    props: ['isNewItem', 'idx', 'item'],
+    props: ['isNewItem', 'idx', 'item', 'coverPic'],
+    computed: {
+        badgeColor() {
+            return ~this.coverPic.indexOf(this.item.src) ? 'purple' : 'grey';
+        }
+    },
     methods: {
         onUpload() {
             remote.dialog.showOpenDialog({
@@ -48,9 +62,14 @@ export default {
                     let promise = window.Promise.resolve([]);
                     const item = filePath.map(path => {
                         promise = promise.then(data => qiniuUpload(path).then(res => {
-                            const {hash, key, domain} = res;
+                            const {
+                                hash,
+                                key,
+                                domain
+                            } = res;
                             data.push({
                                 src: `${domain}/${key}`,
+                                isCover: false,
                                 desc: ''
                             });
                             return data;
@@ -61,6 +80,15 @@ export default {
                     }).catch(err => this.$EventBus.$emit('error', err));
                 }
             });
+        },
+        toggleCover() {
+            const idx = this.coverPic.indexOf(this.item.src);
+            if (~idx) {
+                this.coverPic.splice(idx, 1);
+            }
+            else {
+                this.coverPic.push(this.item.src);
+            }
         },
         onRemove() {
             this.$emit('onItemRemove', this.$props.idx);

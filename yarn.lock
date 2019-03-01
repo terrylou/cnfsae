@@ -9407,6 +9407,13 @@ vue-html-loader@^1.2.4:
     loader-utils "^1.0.2"
     object-assign "^4.1.0"
 
+vue-icon-font@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/vue-icon-font/-/vue-icon-font-1.0.4.tgz#96fcd972338edb46b5863e2c45839985bdd8e5ae"
+  integrity sha512-8z8Ra/XvbNfsVU6qQH2JbkjZSQeALFr6fIPtqtJJ9CDT7595KI6HqPTW8C2974KW6RZv+gwo7U2iDWuFTSgK5g==
+  dependencies:
+    vue "^2.5.21"
+
 vue-loader@^15.2.4:
   version "15.6.4"
   resolved "http://registry.npm.taobao.org/vue-loader/download/vue-loader-15.6.4.tgz#ea6ea48cada424da2cc2304495377678e4b0f6a7"
@@ -9439,7 +9446,7 @@ vue-template-es2015-compiler@^1.9.0:
   version "1.9.1"
   resolved "http://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
 
-vue@^2.5.16, vue@^2.5.22:
+vue@^2.5.16, vue@^2.5.21, vue@^2.5.22:
   version "2.6.7"
   resolved "http://registry.npm.taobao.org/vue/download/vue-2.6.7.tgz#254f188e7621d2d19ee28d0c0442c6d21b53ae2d"
 

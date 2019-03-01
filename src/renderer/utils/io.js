@@ -9,7 +9,7 @@ import {auth, images} from './urls';
 const bucketName = 'cnfsae-editor';
 const domain = 'http://editor.cnfsae.com';
 
-const getConfig = value => configs.findOne({
+export const getConfig = value => configs.findOne({
     value
 }).then(config => {
     if (!config || !config.appId || !config.appToken) {
@@ -20,6 +20,13 @@ const getConfig = value => configs.findOne({
         appToken: config.appToken
     };
 });
+
+export const getConfigs = () => configs.find().then(configs => configs.map(conf => {
+    return {
+        name: conf.text,
+        source: conf.value
+    };
+}));
 
 const getBucket = value => buckets.findOne({
     value

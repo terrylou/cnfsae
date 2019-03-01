@@ -1,14 +1,15 @@
 <template>
 <v-container>
-    <v-form>
-        <v-text-field label="图集标题" placeholder="标题" v-model="title"></v-text-field>
+    <v-form ref="form" v-model="valid">
+        <v-text-field label="图集标题" placeholder="标题" v-model="title" required :rules="rules.title" :counter="30"></v-text-field>
         <div>
             <draggable v-model="content" @start="drag=true" @end="drag=false">
-                <image-item v-for="(item, idx) in content" :list="content" :item="item" :key="idx" :idx="idx" @onItemRemove="onItemRemove"></image-item>
+                <image-item v-for="(item, idx) in content" :list="content" :item="item" :key="idx" :idx="idx" :coverPic="coverPic" @onItemRemove="onItemRemove"></image-item>
             </draggable>
             <image-item :idx="content.length" :isNewItem="true" @onItemAdd="onItemAdd"></image-item>
         </div>
-        <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签"></v-combobox>
+        <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
+        <sources></sources>
         <v-btn color="purple lighten-1" dark>存草稿</v-btn>
         <v-btn color="purple darken-3" dark @click="onSave">发布</v-btn>
     </v-form>
@@ -18,6 +19,7 @@
 <script>
 import ImageItem from './ImageItem.vue';
 import draggable from 'vuedraggable';
+import Sources from './Sources.vue';
 import {
     publishImage
 } from '../../utils/io';
@@ -26,20 +28,37 @@ export default {
     name: 'image-form',
     components: {
         'image-item': ImageItem,
-        draggable
+        draggable,
+        sources: Sources
     },
     data() {
         return {
             title: '',
             content: [],
-            tags: []
+            tags: [],
+            coverPic: [],
+            valid: true,
+            rules: {
+                title: [
+                    v => !!v || '标题是必须的',
+                    v => (v && v.length <= 30) || '标题不得多于30个字'
+                ],
+                tags: [
+                    v => v.length > 0 || '标签为必选项',
+                    v => (v && v.length <= 6) || '标签数不得超过6个'
+                ]
+            }
         };
     },
     methods: {
         onSave() {
-            publishImage.baidu(this.title, JSON.stringify(this.content))
-                .catch(err => this.$EventBus.$emit('error', err));
-            // publishImage.qq(this.title, JSON.stringify(this.content), null, this.tags.toString())
+            if (!this.$refs.form.validate()) {
+                this.$EventBus.$emit('error', new Error('发布内容有误，请按提示完善后重新发布'));
+                return;
+            }
+            // publishImage.baidu(this.title, JSON.stringify(this.content))
+            //     .catch(err => this.$EventBus.$emit('error', err));
+            // publishImage.qq(this.title, JSON.stringify(this.content), null, this.tags.join(','), this.converPic.join(','))
             //     .catch(err => this.$EventBus.$emit('error', err));
         },
         onItemAdd(key, content) {
