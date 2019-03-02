@@ -3,7 +3,7 @@
     <v-toolbar color="purple darken-3" dark tabs>
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
 
-        <v-toolbar-title centered>{{ title }}</v-toolbar-title>
+        <v-toolbar-title centered>{{ $route.meta.name }}</v-toolbar-title>
 
         <v-spacer></v-spacer>
     </v-toolbar>
@@ -54,7 +54,6 @@ export default {
             snackbar: false,
             timeout: 2000,
             text: '',
-            title: '',
             items: [{
                     title: '编辑器',
                     icon: 'edit',
@@ -80,7 +79,6 @@ export default {
     },
     methods: {
         linkTo(target, title) {
-            this.title = title;
             this.$router.push(target);
         }
     },

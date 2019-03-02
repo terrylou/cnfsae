@@ -73,7 +73,7 @@ export default {
 <style>
     @import "~mavon-editor/dist/css/index.css";
     .v-note-wrapper {
-        margin-bottom: 20px;
         z-index: 1 !important;
+        margin-top: 20px;
     }
 </style>

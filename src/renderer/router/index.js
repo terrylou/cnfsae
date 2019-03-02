@@ -17,38 +17,48 @@ export default new Router({
         {
             path: '/',
             name: 'welcome-page',
+            meta: {name: '首页'},
             component: HomePage,
             children: [{
                 path: 'editor',
                 component: EditorPage,
+                meta: {name: '编辑器'},
                 children: [{
                     path: '',
-                    component: ArticleForm
+                    component: ArticleForm,
+                    name: 'article-editor',
+                    meta: {name: '编辑器 - 图文'}
                 }, {
                     path: 'article',
                     name: 'article-editor',
                     component: ArticleForm,
-                    props: true
+                    props: true,
+                    meta: {name: '编辑器 - 图文'}
                 }, {
                     path: 'image',
                     name: 'image-editor',
                     component: ImageForm,
-                    props: true
+                    props: true,
+                    meta: {name: '编辑器 - 图集'}
                 }, {
                     path: 'video',
                     name: 'video-editor',
                     component: VideoForm,
-                    props: true
+                    props: true,
+                    meta: {name: '编辑器 - 视频'}
                 }]
             }, {
                 path: 'about',
-                component: AboutPage
+                component: AboutPage,
+                meta: {name: '设置'}
             }, {
                 path: 'draft',
-                component: DraftPage
+                component: DraftPage,
+                meta: {name: '草稿箱'}
             }, {
                 path: 'published',
-                component: PublishedPage
+                component: PublishedPage,
+                meta: {name: '已发布'}
             }]
         }, {
             path: '/404',
