@@ -48,7 +48,7 @@ export const saveDraft = (id, type, title, data) => {
     return posts.insert(Object.assign({type, title, createTime: +new Date()}, data)).then(res => 1);
 };
 
-export const fetchDrafts = () => posts.find().sort({createTime: -1});
+export const fetchDrafts = () => posts.find({publishTime: {$exists: false}}).sort({createTime: -1});
 
 export const fetchDraft = id => posts.findOne({'_id': id});
 
