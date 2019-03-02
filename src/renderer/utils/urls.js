@@ -5,8 +5,8 @@ export const auth = {
 };
 
 export const images = {
-    qq(token, title, content, coverPic) {
-        return `https://api.om.qq.com/articlev2/clientpubgrpic?access_token=${token}&title=${title}&content=${content}&cover_pic=${coverPic}`;
+    qq(token, title, content, coverPic, coverType, tag) {
+        return `https://api.om.qq.com/articlev2/clientpubgrpic?access_token=${token}&title=${title}&content=${content}&cover_pic=${coverPic}&cover_type=${coverType}&tag=${tag}&category=4`;
     },
-    baidu: 'http://baijiahao.baidu.com/builderinner/open/resource/article/gallery'
+    baidu: 'https://baijiahao.baidu.com/builderinner/open/resource/article/gallery'
 };

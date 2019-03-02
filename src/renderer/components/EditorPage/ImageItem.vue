@@ -69,7 +69,6 @@ export default {
                             } = res;
                             data.push({
                                 src: `${domain}/${key}`,
-                                isCover: false,
                                 desc: ''
                             });
                             return data;

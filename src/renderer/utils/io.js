@@ -90,10 +90,17 @@ const getAuth = {
 export const publishImage = {
     qq(body) {
         let {title, content, coverPic, tags} = body;
+        content = JSON.stringify(content.map(itm => {
+            return {
+                image: itm.src,
+                desc: itm.desc
+            };
+        }));
+        const coverType = coverPic.length > 2 ? 3 : 1;
         coverPic = coverPic.join(',');
-        tags = tags.join(',');
+        const tag = tags.join(',');
         return getAuth.qq().then(token => {
-            return axios.post(images.qq(token, title, content, coverPic, tags)).then(res => {
+            return axios.post(images.qq(token, title, content, coverPic, coverType, tag)).then(res => {
                 res = res.data;
                 if (!res.code) {
                     return res.data.article_id;
@@ -103,16 +110,20 @@ export const publishImage = {
         });
     },
     baidu(body) {
-        let {title, content: photograph} = body;
+        let {title, content} = body;
         return getConfig('baidu').then(({
             appId,
             appToken
         }) => {
-            return axios.post(images.baidu, {
-                'app_id': appId,
-                'app_token': appToken,
-                title,
-                photograph
+            return axios({
+                url: images.baidu,
+                method: 'post',
+                data: {
+                    'app_id': appId,
+                    'app_token': appToken,
+                    title,
+                    photograph: JSON.stringify(content)
+                }
             });
         });
     }

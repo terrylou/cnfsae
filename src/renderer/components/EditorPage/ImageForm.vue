@@ -59,9 +59,16 @@ export default {
             }
             const body = {
                 title: this.title,
-                content: JSON.stringify(this.content),
+                content: this.content,
                 tags: this.tags,
-                coverPic: this.coverPic
+                coverPic: this.coverPic.length
+                    ? this.coverPic
+                    : this.content.reduce((pics, itm, idx) => {
+                        if (idx < 3) {
+                            pics.push(itm.src);
+                        }
+                        return pics;
+                    }, [])
             };
             let promise = window.Promise.resolve();
             Object.keys(this.selected).map(chn => {
