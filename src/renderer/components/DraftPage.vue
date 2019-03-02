@@ -1,11 +1,13 @@
 <template>
+<v-container>
 <v-layout row>
     <v-flex xs12 sm10 offset-sm1>
         <v-list>
-            <post-item v-for="item in items" :key="item._id" :item="item" @fetchData="fetchData"></post-item>
+            <post-item v-for="item in items" :key="item._id" :item="item" @fetchData="fetchData" type="draft"></post-item>
         </v-list>
     </v-flex>
 </v-layout>
+</v-container>
 </template>
 
 <script>
@@ -27,9 +29,6 @@ export default {
     methods: {
         fetchData() {
             return fetchDrafts().then(list => this.items = list);
-        },
-        onEdit(id) {
-            this.$router.push({name: 'image-editor', params: {id}});
         }
     },
     created() {

@@ -9,10 +9,10 @@
             <v-list-tile-sub-title>{{ updateTime }}</v-list-tile-sub-title>
         </v-list-tile-content>
 
-        <v-list-tile-action>
-            <v-icon color="teal" @click="onEdit(item._id)">border_color</v-icon>
+        <v-list-tile-action v-if="editable">
+            <v-icon color="teal" @click="onEdit(item._id, item.type)">border_color</v-icon>
         </v-list-tile-action>
-        <v-list-tile-action>
+        <v-list-tile-action v-if="editable">
             <v-icon color="warning" @click="onDelete(item._id)">delete</v-icon>
         </v-list-tile-action>
     </v-list-tile>
@@ -25,7 +25,7 @@ import {
 
 export default {
     name: 'post-item',
-    props: ['item'],
+    props: ['item', 'type'],
     computed: {
         icon() {
             switch (this.item.type) {
@@ -37,13 +37,16 @@ export default {
                     return 'insert_chart';
             }
         },
+        editable() {
+            return this.type === 'draft';
+        },
         updateTime() {
             return new Date(this.item.createTime).toDateString();
         }
     },
     methods: {
-        onEdit(id) {
-            this.$router.push({name: 'image-editor', params: {id}});
+        onEdit(id, type) {
+            this.$router.push({name: `${type}-editor`, params: {id}});
         },
         onDelete(id) {
             if (window.confirm('删除后的内容无法恢复，你确定要这么做吗？')) {

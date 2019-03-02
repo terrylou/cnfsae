@@ -48,11 +48,21 @@ export const saveDraft = (id, type, title, data) => {
     return posts.insert(Object.assign({type, title, createTime: +new Date()}, data)).then(res => 1);
 };
 
+export const publishContent = (id, type, title, data) => {
+    if (id) {
+        return posts.update({'_id': id}, {$set: Object.assign({type, title, publishTime: +new Date()}, data)});
+    }
+    return posts.insert(Object.assign({type, title, createTime: +new Date(), publishTime: +new Date()}, data))
+        .then(res => 1);
+};
+
 export const fetchDrafts = () => posts.find({publishTime: {$exists: false}}).sort({createTime: -1});
 
 export const fetchDraft = id => posts.findOne({'_id': id});
 
 export const deleteDraft = id => posts.remove({'_id': id});
+
+export const fetchSentContents = () => posts.find({publishTime: {$exists: true}}).sort({createTime: -1});
 
 const genUpToken = (accessKey, secretKey, bucket) => {
     const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
@@ -115,31 +125,49 @@ const getAuth = {
     }
 };
 
-export const publishImage = {
-    qq(body) {
-        let {title, content, coverPic, tags} = body;
-        content = JSON.stringify(content.map(itm => {
-            return {
-                image: itm.src,
-                desc: itm.desc
-            };
-        }));
-        const coverType = coverPic.length > 2 ? 3 : 1;
-        coverPic = coverPic.join(',');
-        const tag = tags.join(',');
-        return getAuth.qq().then(token => axios.post(images.qq(token, title, content, coverPic, coverType, tag))
+export const publish = {
+    image: {
+        qq(body) {
+            let {title, content, coverPic, tags} = body;
+            content = JSON.stringify(content.map(itm => {
+                return {
+                    image: itm.src,
+                    desc: itm.desc
+                };
+            }));
+            const coverType = coverPic.length > 2 ? 3 : 1;
+            coverPic = coverPic.join(',');
+            const tag = tags.join(',');
+            return getAuth.qq().then(token => axios.post(images.qq(token, title, content, coverPic, coverType, tag))
             .then(responseHandler.qq));
-    },
-    baidu(body) {
-        let {title, content} = body;
-        return getConfig('baidu').then(({
-            appId,
-            appToken
-        }) => axios.post(images.baidu, {
+        },
+        baidu(body) {
+            let {title, content} = body;
+            return getConfig('baidu').then(({
+                appId,
+                appToken
+            }) => axios.post(images.baidu, {
                 'app_id': appId,
                 'app_token': appToken,
                 title,
                 photograph: JSON.stringify(content)
             }).then(responseHandler.baidu));
+        }
+    },
+    video: {
+        qq(body) {
+
+        },
+        baidu(body) {
+
+        }
+    },
+    article: {
+        qq(body) {
+
+        },
+        baidu(body) {
+
+        }
     }
 };

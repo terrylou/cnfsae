@@ -26,7 +26,9 @@ export default new Router({
                     component: ArticleForm
                 }, {
                     path: 'article',
-                    component: ArticleForm
+                    name: 'article-editor',
+                    component: ArticleForm,
+                    props: true
                 }, {
                     path: 'image',
                     name: 'image-editor',
@@ -34,7 +36,9 @@ export default new Router({
                     props: true
                 }, {
                     path: 'video',
-                    component: VideoForm
+                    name: 'video-editor',
+                    component: VideoForm,
+                    props: true
                 }]
             }, {
                 path: 'about',

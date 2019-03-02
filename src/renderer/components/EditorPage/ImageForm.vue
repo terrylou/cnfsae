@@ -9,9 +9,9 @@
             <image-item :idx="content.length" :isNewItem="true" @onItemAdd="onItemAdd"></image-item>
         </div>
         <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
-        <sources :selected="selected" @onUpdateSource="onUpdateSource"></sources>
-        <v-btn color="purple lighten-1" dark @click="onSave">存草稿</v-btn>
-        <v-btn color="purple darken-3" dark @click="onPublish">发布</v-btn>
+        <sources :selected="selected"></sources>
+        <save-draft-btn :id="id" :title="title" type="image" :data="draftContent"></save-draft-btn>
+        <publish-btn :form="formNode" :id="id" :title="title" type="image" :data="publishContent" :sources="selected" :draft="draftContent"></publish-btn>
     </v-form>
 </v-container>
 </template>
@@ -20,9 +20,9 @@
 import ImageItem from './ImageItem.vue';
 import draggable from 'vuedraggable';
 import Sources from './Sources.vue';
+import SaveDraftBtn from './SaveDraftBtn.vue';
+import PublishBtn from './PublishBtn.vue';
 import {
-    publishImage,
-    saveDraft,
     fetchDraft
 } from '../../utils/io';
 
@@ -32,7 +32,33 @@ export default {
     components: {
         'image-item': ImageItem,
         draggable,
-        sources: Sources
+        sources: Sources,
+        'save-draft-btn': SaveDraftBtn,
+        'publish-btn': PublishBtn
+    },
+    computed: {
+        draftContent() {
+            return {
+                content: JSON.stringify(this.content),
+                tags: this.tags,
+                coverPic: this.coverPic
+            };
+        },
+        publishContent() {
+            return {
+                title: this.title,
+                content: this.content,
+                tags: this.tags,
+                coverPic: this.coverPic.length
+                    ? this.coverPic
+                    : this.content.reduce((pics, itm, idx) => {
+                        if (idx < 3) {
+                            pics.push(itm.src);
+                        }
+                        return pics;
+                    }, [])
+            };
+        }
     },
     data() {
         return {
@@ -42,6 +68,7 @@ export default {
             coverPic: [],
             selected: {},
             valid: true,
+            formNode: {},
             rules: {
                 title: [
                     v => !!v || '标题是必须的',
@@ -55,45 +82,6 @@ export default {
         };
     },
     methods: {
-        onPublish() {
-            if (!this.$refs.form.validate()) {
-                this.$EventBus.$emit('error', new Error('发布内容有误，请按提示完善后重新发布'));
-                return;
-            }
-            const body = {
-                title: this.title,
-                content: this.content,
-                tags: this.tags,
-                coverPic: this.coverPic.length
-                    ? this.coverPic
-                    : this.content.reduce((pics, itm, idx) => {
-                        if (idx < 3) {
-                            pics.push(itm.src);
-                        }
-                        return pics;
-                    }, [])
-            };
-            let promise = window.Promise.resolve();
-            Object.keys(this.selected).map(chn => {
-                if (this.selected[chn]) {
-                    promise = promise.then(() => publishImage[chn](body));
-                }
-            });
-            promise = promise.catch(err => this.$EventBus.$emit('error', err));
-        },
-        onSave() {
-            const data = {
-                content: JSON.stringify(this.content),
-                tags: this.tags,
-                coverPic: this.coverPic
-            };
-            saveDraft(this.id, 'image', this.title, data)
-                .then(num => this.$EventBus.$emit('success', `保存了${num}篇内容`))
-                .catch(err => this.$EventBus.$emit('error', err));
-        },
-        onUpdateSource(source) {
-            this.selected[source] = !this.selected[source];
-        },
         onItemAdd(key, content) {
             this.content.splice(key, 0, ...content);
         },
@@ -118,6 +106,9 @@ export default {
                 this.tags = item.tags;
             });
         }
+    },
+    mounted() {
+        this.formNode = this.$refs.form;
     }
 }
 </script>
