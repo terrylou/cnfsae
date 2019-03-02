@@ -9,9 +9,11 @@
             <image-item :idx="content.length" :isNewItem="true" @onItemAdd="onItemAdd"></image-item>
         </div>
         <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
-        <sources :selected="selected"></sources>
-        <save-draft-btn :id="id" :title="title" type="image" :data="draftContent"></save-draft-btn>
-        <publish-btn :form="formNode" :id="id" :title="title" type="image" :data="publishContent" :sources="selected" :draft="draftContent"></publish-btn>
+        <div class="text-xs-center">
+            <sources :selected="selected"></sources>
+            <save-draft-btn :id="id" :title="title" type="image" :data="draftContent"></save-draft-btn>
+            <publish-btn :form="formNode" :id="id" :title="title" type="image" :data="publishContent" :sources="selected" :draft="draftContent"></publish-btn>
+        </div>
     </v-form>
 </v-container>
 </template>

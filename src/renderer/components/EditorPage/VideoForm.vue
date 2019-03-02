@@ -2,9 +2,12 @@
 <v-container>
     <v-form ref="form" v-model="valid">
         <v-text-field label="视频标题" placeholder="标题" v-model="title" required :rules="rules.title" :counter="30"></v-text-field>
-        <sources :selected="selected"></sources>
-        <save-draft-btn :id="id" :title="title" type="video" :data="publishContent"></save-draft-btn>
-        <publish-btn :form="formNode" :id="id" :title="title" type="video" :data="publishContent" :sources="selected" :draft="publishContent"></publish-btn>
+        <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
+        <div class="text-xs-center">
+            <sources :selected="selected"></sources>
+            <save-draft-btn :id="id" :title="title" type="video" :data="publishContent"></save-draft-btn>
+            <publish-btn :form="formNode" :id="id" :title="title" type="video" :data="publishContent" :sources="selected" :draft="publishContent"></publish-btn>
+        </div>
     </v-form>
 </v-container>
 </template>
