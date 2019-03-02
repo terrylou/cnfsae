@@ -25,9 +25,7 @@ export default new Router({
                 meta: {name: '编辑器'},
                 children: [{
                     path: '',
-                    component: ArticleForm,
-                    name: 'article-editor',
-                    meta: {name: '编辑器 - 图文'}
+                    redirect: './article'
                 }, {
                     path: 'article',
                     name: 'article-editor',
