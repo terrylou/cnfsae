@@ -66,17 +66,31 @@ export const qiniuUpload = function (path) {
                     throw respErr;
                 }
                 if (respInfo.statusCode === 200) {
-                    // console.log(respBody);
                     resolve(Object.assign(respBody, {bucket: bucketName, domain}));
                 }
                 else {
-                    // console.log(respInfo.statusCode);
-                    // console.log(respBody);
                     reject(respBody);
                 }
             });
         }).catch(err => reject(err));
     });
+};
+
+const responseHandler = {
+    qq(res) {
+        res = res.data;
+        if (!res.code) {
+            return res.data.article_id;
+        }
+        return window.Promise.reject(new Error(res.msg));
+    },
+    baidu(res) {
+        res = res.data;
+        if (!res.errno) {
+            return res.data.article_id;
+        }
+        return window.Promise.reject(new Error(res.errmsg));
+    }
 };
 
 const getAuth = {
@@ -99,32 +113,19 @@ export const publishImage = {
         const coverType = coverPic.length > 2 ? 3 : 1;
         coverPic = coverPic.join(',');
         const tag = tags.join(',');
-        return getAuth.qq().then(token => {
-            return axios.post(images.qq(token, title, content, coverPic, coverType, tag)).then(res => {
-                res = res.data;
-                if (!res.code) {
-                    return res.data.article_id;
-                }
-                return window.Promise.reject(new Error(res.msg));
-            });
-        });
+        return getAuth.qq().then(token => axios.post(images.qq(token, title, content, coverPic, coverType, tag))
+            .then(responseHandler.qq));
     },
     baidu(body) {
         let {title, content} = body;
         return getConfig('baidu').then(({
             appId,
             appToken
-        }) => {
-            return axios({
-                url: images.baidu,
-                method: 'post',
-                data: {
-                    'app_id': appId,
-                    'app_token': appToken,
-                    title,
-                    photograph: JSON.stringify(content)
-                }
-            });
-        });
+        }) => axios.post(images.baidu, {
+                'app_id': appId,
+                'app_token': appToken,
+                title,
+                photograph: JSON.stringify(content)
+            }).then(responseHandler.baidu));
     }
 };
