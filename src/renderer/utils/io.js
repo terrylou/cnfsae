@@ -1,6 +1,7 @@
 import {
     configs,
-    buckets
+    buckets,
+    posts
 } from '../datastore';
 import qiniu from 'qiniu';
 import axios from 'axios';
@@ -39,6 +40,19 @@ const getBucket = value => buckets.findOne({
         secretKey: config.secretKey
     };
 });
+
+export const saveDraft = (id, type, title, data) => {
+    if (id) {
+        return posts.update({'_id': id}, {$set: Object.assign({type, title, updateTime: +new Date()}, data)});
+    }
+    return posts.insert(Object.assign({type, title, createTime: +new Date()}, data)).then(res => 1);
+};
+
+export const fetchDrafts = () => posts.find().sort({createTime: -1});
+
+export const fetchDraft = id => posts.findOne({'_id': id});
+
+export const deleteDraft = id => posts.remove({'_id': id});
 
 const genUpToken = (accessKey, secretKey, bucket) => {
     const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);

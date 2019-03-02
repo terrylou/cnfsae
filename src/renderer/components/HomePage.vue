@@ -63,12 +63,12 @@ export default {
                 {
                     title: '已发布',
                     icon: 'done_all',
-                    target: '/sent'
+                    target: '/published'
                 },
                 {
                     title: '草稿箱',
                     icon: 'drafts',
-                    target: '/drafts'
+                    target: '/draft'
                 },
                 {
                     title: '设置',
@@ -88,6 +88,10 @@ export default {
         this.$EventBus.$on('error', (err) => {
             this.snackbar = true;
             this.text = err.message;
+        });
+        this.$EventBus.$on('success', (msg) => {
+            this.snackbar = true;
+            this.text = msg;
         });
     }
 }

@@ -10,8 +10,8 @@
         </div>
         <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
         <sources :selected="selected" @onUpdateSource="onUpdateSource"></sources>
-        <v-btn color="purple lighten-1" dark>存草稿</v-btn>
-        <v-btn color="purple darken-3" dark @click="onSave">发布</v-btn>
+        <v-btn color="purple lighten-1" dark @click="onSave">存草稿</v-btn>
+        <v-btn color="purple darken-3" dark @click="onPublish">发布</v-btn>
     </v-form>
 </v-container>
 </template>
@@ -21,11 +21,14 @@ import ImageItem from './ImageItem.vue';
 import draggable from 'vuedraggable';
 import Sources from './Sources.vue';
 import {
-    publishImage
+    publishImage,
+    saveDraft,
+    fetchDraft
 } from '../../utils/io';
 
 export default {
     name: 'image-form',
+    props: ['id'],
     components: {
         'image-item': ImageItem,
         draggable,
@@ -52,7 +55,7 @@ export default {
         };
     },
     methods: {
-        onSave() {
+        onPublish() {
             if (!this.$refs.form.validate()) {
                 this.$EventBus.$emit('error', new Error('发布内容有误，请按提示完善后重新发布'));
                 return;
@@ -78,6 +81,16 @@ export default {
             });
             promise = promise.catch(err => this.$EventBus.$emit('error', err));
         },
+        onSave() {
+            const data = {
+                content: JSON.stringify(this.content),
+                tags: this.tags,
+                coverPic: this.coverPic
+            };
+            saveDraft(this.id, 'image', this.title, data)
+                .then(num => this.$EventBus.$emit('success', `保存了${num}篇内容`))
+                .catch(err => this.$EventBus.$emit('error', err));
+        },
         onUpdateSource(source) {
             this.selected[source] = !this.selected[source];
         },
@@ -95,6 +108,16 @@ export default {
             }
         }
         return next();
+    },
+    created() {
+        if (this.id) {
+            fetchDraft(this.id).then(item => {
+                this.title = item.title;
+                this.content = JSON.parse(item.content);
+                this.coverPic = item.coverPic;
+                this.tags = item.tags;
+            });
+        }
     }
 }
 </script>
