@@ -60,7 +60,8 @@ export default new Router({
                 component: PublishedPage,
                 meta: {name: '已发布'}
             }]
-        }, {
+        },
+        {
             path: '/404',
             component: NotFound
         },
