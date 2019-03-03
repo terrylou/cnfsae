@@ -2,6 +2,7 @@
 <v-container>
     <v-form ref="form" v-model="valid">
         <v-text-field label="视频标题" placeholder="标题" v-model="title" required :rules="rules.title" :counter="30"></v-text-field>
+        <video-item :video="video"></video-item>
         <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
         <div class="text-xs-center">
             <sources :selected="selected"></sources>
@@ -20,6 +21,7 @@ import {
 import Sources from './Sources.vue';
 import SaveDraftBtn from './SaveDraftBtn.vue';
 import PublishBtn from './PublishBtn.vue';
+import VideoItem from './VIdeoItem';
 
 export default {
     name: 'video-form',
@@ -27,14 +29,19 @@ export default {
     components: {
         sources: Sources,
         'save-draft-btn': SaveDraftBtn,
-        'publish-btn': PublishBtn
+        'publish-btn': PublishBtn,
+        'video-item': VideoItem
     },
     data() {
         return {
             title: '',
-            content: '',
             tags: [],
-            coverPic: '',
+            video: {
+                path: '',
+                src: '',
+                poster: '',
+                desc: ''
+            },
             selected: {},
             valid: true,
             formNode: {},
@@ -53,9 +60,10 @@ export default {
     computed: {
         publishContent() {
             return {
+                title: this.title,
                 content: this.content,
                 tags: this.tags,
-                coverPic: this.coverPic
+                video: this.video
             };
         }
     },
@@ -69,6 +77,15 @@ export default {
             }
         }
         return next();
+    },
+    created() {
+        if (this.id) {
+            fetchDraft(this.id).then(item => {
+                this.title = item.title;
+                this.video = item.video;
+                this.tags = item.tags;
+            });
+        }
     },
     mounted() {
         this.formNode = this.$refs.form;

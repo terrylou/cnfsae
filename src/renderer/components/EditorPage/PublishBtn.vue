@@ -23,7 +23,7 @@ export default {
             switch (chn) {
                 case 'qq':
                 case 'baidu':
-                    id = res.data.data.article_id;
+                    id = res;
                     break;
             }
             if (id) {

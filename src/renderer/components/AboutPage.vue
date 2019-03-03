@@ -53,6 +53,10 @@ const chnList = [
     {
         text: '头条号',
         value: 'toutiao'
+    },
+    {
+        text: '大鱼号',
+        value: 'uc'
     }
 ];
 

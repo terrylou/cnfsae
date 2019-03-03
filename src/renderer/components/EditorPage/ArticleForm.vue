@@ -6,8 +6,8 @@
         <v-subheader>封面图</v-subheader>
         <v-container fluid grid-list-xs>
             <v-layout row wrap>
-            <v-flex xs2 v-if="coverPic.length" v-for="(img, idx) in coverPic">
-                <v-img :key="idx" :src="img" aspect-ratio="1.5" @click="onClickCoverPic(idx)"></v-img>
+            <v-flex xs2 v-if="coverPic.length" v-for="(img, idx) in coverPic" :key="idx">
+                <v-img :src="img" aspect-ratio="1.5" @click="onClickCoverPic(idx)"></v-img>
             </v-flex>
         </v-layout>
         </v-container>
@@ -93,7 +93,6 @@ export default {
                 ? qiniuB64Upload($file.miniurl.split(',')[1])
                 : qiniuUpload($file.path);
             promise.then(res => {
-                console.log(res);
                 const {
                     key,
                     domain

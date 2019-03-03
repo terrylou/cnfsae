@@ -4124,6 +4124,7 @@ form-data@~2.0.0:
 form-data@~2.3.0, form-data@~2.3.2:
   version "2.3.3"
   resolved "http://registry.npm.taobao.org/form-data/download/form-data-2.3.3.tgz#dcce52c05f644f298c6a7ab936bd724ceffbf3a6"
+  integrity sha1-3M5SwF9kTymManq5Nr1yTO/786Y=
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.6"
@@ -9471,6 +9472,11 @@ vue-template-es2015-compiler@^1.9.0:
   version "1.9.1"
   resolved "http://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha1-HuO8mhbsv1EYvjNLsV+cRvgvWCU=
+
+vue-video-module@^0.4.6:
+  version "0.4.6"
+  resolved "http://registry.npm.taobao.org/vue-video-module/download/vue-video-module-0.4.6.tgz#ca595c9d6ea340e8426bd4efcb3db70bc187c6c5"
+  integrity sha1-yllcnW6jQOhCa9Tvyz23C8GHxsU=
 
 vue@^2.5.16:
   version "2.6.8"

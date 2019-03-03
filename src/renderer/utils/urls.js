@@ -18,6 +18,9 @@ export const article = {
     baidu: 'https://baijiahao.baidu.com/builderinner/open/resource/article/publish'
 };
 
-export const video = {
+export const videos = {
+    qq(token, title, video, md5, tag) {
+        return `https://api.om.qq.com/articlev2/clientpubvid?access_token=${token}&title=${title}&tags=${tag}&cat=1502&md5=${md5}&desc=${video.desc}`;
+    },
     baidu: 'https://baijiahao.baidu.com/builderinner/open/resource/video/publish'
 };

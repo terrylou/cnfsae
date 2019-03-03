@@ -3,9 +3,10 @@ import {
     buckets,
     posts
 } from '../datastore';
+import fs from 'fs';
 import qiniu from 'qiniu';
 import axios from 'axios';
-import {auth, images, article} from './urls';
+import {auth, images, article, videos} from './urls';
 
 const bucketName = 'cnfsae-editor';
 const domain = 'http://editor.cnfsae.com';
@@ -147,6 +148,8 @@ const responseHandler = {
     }
 };
 
+const getMD5 = url => axios(url + '?qhash/md5').then(res => res.data.hash);
+
 const getAuth = {
     qq() {
         return getConfig('qq')
@@ -154,6 +157,7 @@ const getAuth = {
             .then(res => res.data.data.access_token);
     }
 };
+
 
 export const publish = {
     image: {
@@ -187,10 +191,37 @@ export const publish = {
     },
     video: {
         qq(body) {
-
+            const {title, video, tags} = body;
+            return getMD5(video.src).then(md5 => {
+                const tag = tags.join(' ');
+                let formData = new FormData();
+                // formData.append('media', fs.createReadStream('file://' + video.path));
+                // return getAuth.qq()
+                //     .then(token => axios({
+                //         method: 'post',
+                //         url: videos.qq(token, title, video, md5, tag),
+                //         data: formData,
+                //         config: {
+                //             headers: {'Content-Type': 'multipart/form-data'}
+                //         }
+                //     })).then(responseHandler.qq);
+            });
         },
         baidu(body) {
-
+            let {title, video, tags} = body;
+            return getConfig('baidu').then(({
+                appId,
+                appToken
+            }) => axios.post(videos.baidu, {
+                'app_id': appId,
+                'app_token': appToken,
+                'is_original': 1,
+                title,
+                'video_url': video.src,
+                'cover_images': video.poster,
+                tag: tags.join(','),
+                'use_auto_cover': 0
+            }).then(responseHandler.baidu));
         }
     },
     article: {

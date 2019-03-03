@@ -24,7 +24,7 @@
                 </v-card>
             </v-flex>
             <v-flex xs10 align-end flexbox v-if="!isNewItem">
-                <v-textarea box no-resize height="100" v-model="item.desc" name="input-7-4" label="图片说明" :value="item.desc" placeholder="请输入图片说明（可选）" counter="200"></v-textarea>
+                <v-textarea box no-resize height="100" v-model="item.desc" name="desc" label="图片说明" :value="item.desc" placeholder="请输入图片说明（可选）" counter="200"></v-textarea>
             </v-flex>
         </v-layout>
     </v-container>
