@@ -162,6 +162,7 @@ export const publish = {
                     desc: itm.desc
                 };
             }));
+            coverPic.slice(3);
             const coverType = coverPic.length > 2 ? 3 : 1;
             coverPic = coverPic.join(',');
             const tag = tags.join(',');
@@ -183,7 +184,13 @@ export const publish = {
     },
     video: {
         qq(body) {
-
+            let {title, content, coverPic, tags} = body;
+            coverPic.slice(3);
+            const coverType = coverPic.length > 2 ? 3 : 1;
+            coverPic = coverPic.join(',');
+            const tag = tags.join(',');
+            return getAuth.qq().then(token => axios.post(article.qq(token, title, content, coverPic, coverType, tag))
+            .then(responseHandler.qq));
         },
         baidu(body) {
 
@@ -202,6 +209,7 @@ export const publish = {
             }) => axios.post(article.baidu, {
                 'app_id': appId,
                 'app_token': appToken,
+                'is_original': 1,
                 title,
                 content: html,
                 'cover_images': JSON.stringify(coverPic.map(src => {
