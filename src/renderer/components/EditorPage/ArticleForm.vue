@@ -2,7 +2,16 @@
 <v-container>
     <v-form ref="form" v-model="valid">
         <v-text-field label="文章标题" placeholder="标题" v-model="title" required :rules="rules.title" :counter="30"></v-text-field>
-        <mavon-editor ref="md" class="md" placeholder="开始你的创作" v-model="content" :title="title" @imgAdd="$imgAdd" @save="(val, render) => $save(val, render, this.title)" :externalLink="externalLink"></mavon-editor>
+        <mavon-editor ref="md" class="md" placeholder="开始你的创作" v-model="content" :title="title" @imgAdd="$imgAdd" :imageClick="$imageClick" @save="(val, render) => $save(val, render, this.title)" :externalLink="externalLink"></mavon-editor>
+        <v-subheader>封面图</v-subheader>
+        <v-container fluid grid-list-xs>
+            <v-layout row wrap>
+            <v-flex xs2 v-if="coverPic.length" v-for="(img, idx) in coverPic">
+                <v-img :key="idx" :src="img" aspect-ratio="1.5" @click="onClickCoverPic(idx)"></v-img>
+            </v-flex>
+        </v-layout>
+        </v-container>
+        <p v-if="!coverPic.length" class="text-xs-center">正文添加图片后，可点击设置为封面图。</p>
         <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
         <div class="text-xs-center">
             <sources :selected="selected"></sources>
@@ -20,7 +29,8 @@ import {
 import fs from 'fs';
 import {
     fetchDraft,
-    qiniuUpload
+    qiniuUpload,
+    qiniuB64Upload
 } from '../../utils/io';
 import Sources from './Sources.vue';
 import SaveDraftBtn from './SaveDraftBtn.vue';
@@ -70,8 +80,15 @@ export default {
         }
     },
     methods: {
+        onClickCoverPic(idx) {
+            this.coverPic.splice(idx, 1);
+        },
         $imgAdd(pos, $file) {
-            qiniuUpload($file.path).then(res => {
+            const promise = $file.miniurl
+                ? qiniuB64Upload($file.miniurl.split(',')[1])
+                : qiniuUpload($file.path);
+            promise.then(res => {
+                console.log(res);
                 const {
                     key,
                     domain
@@ -81,10 +98,22 @@ export default {
                 this.$refs.md.$img2Url(pos, url);
             });
         },
+        $imageClick(node) {
+            const src = node.getAttribute('src');
+            const idx = this.coverPic.indexOf(src);
+            if (!~idx) {
+                this.coverPic.push(src);
+            } else {
+                this.coverPic.splice(idx, 1);
+            }
+        },
         $save(val, render, title) {
             remote.dialog.showSaveDialog({
                 defaultPath: `~/${title}.md`,
-                filters: [{name: 'Markdown Document', extensions: ['md']}]
+                filters: [{
+                    name: 'Markdown Document',
+                    extensions: ['md']
+                }]
             }, fileName => {
                 if (!fileName) {
                     return;
@@ -103,7 +132,7 @@ export default {
             fetchDraft(this.id).then(item => {
                 this.title = item.title;
                 this.content = item.content;
-                // this.coverPic = item.coverPic;
+                this.coverPic = item.coverPic;
                 this.tags = item.tags;
             });
         }
@@ -115,9 +144,10 @@ export default {
 </script>
 
 <style>
-    @import "~mavon-editor/dist/css/index.css";
-    .v-note-wrapper {
-        z-index: 1 !important;
-        margin-top: 20px;
-    }
+@import "~mavon-editor/dist/css/index.css";
+
+.v-note-wrapper {
+    z-index: 1 !important;
+    margin-top: 20px;
+}
 </style>

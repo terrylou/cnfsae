@@ -10,7 +10,26 @@ import {
 
 export default {
     props: ['id', 'type', 'title', 'data', 'form', 'draft', 'sources'],
+    data() {
+        return {
+            articleId: {}
+        };
+    },
     methods: {
+        // 按渠道获取平台返回的文章ID（暂只支持企鹅号、百家号）
+        saveArticleId(chn, res) {
+            let id;
+            switch (chn) {
+                case 'qq':
+                case 'baidu':
+                    id = res.data.data.article_id;
+                    break;
+            }
+            if (id) {
+                this.articleId[chn] = id;
+            }
+            return res;
+        },
         onPublish() {
             if (!this.form.validate()) {
                 this.$EventBus.$emit('error', new Error('发布内容有误，请按提示完善后重新发布'));
@@ -24,12 +43,14 @@ export default {
             }
             sourceList.map(chn => {
                 if (this.sources[chn]) {
-                    promise = promise.then(() => publish[this.type][chn](this.data));
+                    promise = promise
+                        .then(() => publish[this.type][chn](this.data))
+                        .then(res => this.saveArticleId(chn, res));
                 }
             });
             promise = promise
                 .then(res => {
-                    publishContent(this.id, this.type, this.title, this.draft)
+                    publishContent(this.id, this.type, this.title, this.articleId, this.draft)
                     this.$EventBus.$emit('success', '发布成功');
                 })
                 .catch(err => this.$EventBus.$emit('error', err));

@@ -48,11 +48,12 @@ export const saveDraft = (id, type, title, data) => {
     return posts.insert(Object.assign({type, title, createTime: +new Date()}, data)).then(res => 1);
 };
 
-export const publishContent = (id, type, title, data) => {
+export const publishContent = (id, type, title, acticleId, data) => {
+    const now = +new Date();
     if (id) {
-        return posts.update({'_id': id}, {$set: Object.assign({type, title, publishTime: +new Date()}, data)});
+        return posts.update({'_id': id}, {$set: Object.assign({type, title, publishTime: now, acticleId}, data)});
     }
-    return posts.insert(Object.assign({type, title, createTime: +new Date(), publishTime: +new Date()}, data))
+    return posts.insert(Object.assign({type, title, createTime: now, publishTime: now, acticleId}, data))
         .then(res => 1);
 };
 
@@ -96,6 +97,32 @@ export const qiniuUpload = function (path) {
                     reject(respBody);
                 }
             });
+        }).catch(err => reject(err));
+    });
+};
+
+export const qiniuB64Upload = function (str) {
+    return new window.Promise((resolve, reject) => {
+        return getBucket('qiniu').then(res => {
+            const {
+                accessKey,
+                secretKey
+            } = res;
+            const token = genUpToken(accessKey, secretKey, bucketName);
+            const url = 'http://upload-z2.qiniup.com/putb64/-1';
+            let xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    return resolve(Object.assign(JSON.parse(xhr.response), {bucket: bucketName, domain}));
+                }
+            };
+            xhr.onerror = function () {
+                return reject();
+            };
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+            xhr.setRequestHeader('Authorization', `UpToken ${token}`);
+            xhr.send(str);
         }).catch(err => reject(err));
     });
 };
