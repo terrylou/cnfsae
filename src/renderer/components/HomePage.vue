@@ -78,7 +78,7 @@ export default {
         }
     },
     methods: {
-        linkTo(target, title) {
+        linkTo(target) {
             this.$router.push(target);
         }
     },
