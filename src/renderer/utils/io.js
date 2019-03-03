@@ -5,7 +5,7 @@ import {
 } from '../datastore';
 import qiniu from 'qiniu';
 import axios from 'axios';
-import {auth, images} from './urls';
+import {auth, images, article} from './urls';
 
 const bucketName = 'cnfsae-editor';
 const domain = 'http://editor.cnfsae.com';
@@ -194,7 +194,20 @@ export const publish = {
 
         },
         baidu(body) {
-
+            let {title, html, coverPic} = body;
+            coverPic.slice(3);
+            return getConfig('baidu').then(({
+                appId,
+                appToken
+            }) => axios.post(article.baidu, {
+                'app_id': appId,
+                'app_token': appToken,
+                title,
+                content: html,
+                'cover_images': JSON.stringify(coverPic.map(src => {
+                    return {src};
+                }))
+            }).then(responseHandler.baidu));
         }
     }
 };

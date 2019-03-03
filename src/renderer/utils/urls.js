@@ -10,3 +10,7 @@ export const images = {
     },
     baidu: 'https://baijiahao.baidu.com/builderinner/open/resource/article/gallery'
 };
+
+export const article = {
+    baidu: 'https://baijiahao.baidu.com/builderinner/open/resource/article/publish'
+};

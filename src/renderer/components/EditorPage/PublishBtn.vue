@@ -5,7 +5,8 @@
 <script>
 import {
     publish,
-    publishContent
+    publishContent,
+    saveDraft
 } from '../../utils/io';
 
 export default {
@@ -35,7 +36,7 @@ export default {
                 this.$EventBus.$emit('error', new Error('发布内容有误，请按提示完善后重新发布'));
                 return;
             }
-            let promise = window.Promise.resolve();
+            let promise = saveDraft(this.id, this.type, this.title, this.draft);
             const sourceList = Object.keys(this.sources);
             if (!sourceList.length) {
                 this.$EventBus.$emit('error', new Error('请选择发布渠道'));
@@ -53,7 +54,9 @@ export default {
                     publishContent(this.id, this.type, this.title, this.articleId, this.draft)
                     this.$EventBus.$emit('success', '发布成功');
                 })
-                .catch(err => this.$EventBus.$emit('error', err));
+                .catch(err => {
+                    this.$EventBus.$emit('error', err);
+                });
         },
     }
 }

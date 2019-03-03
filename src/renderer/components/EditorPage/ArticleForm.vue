@@ -2,7 +2,7 @@
 <v-container>
     <v-form ref="form" v-model="valid">
         <v-text-field label="文章标题" placeholder="标题" v-model="title" required :rules="rules.title" :counter="30"></v-text-field>
-        <mavon-editor ref="md" class="md" placeholder="开始你的创作" v-model="content" :title="title" @imgAdd="$imgAdd" :imageClick="$imageClick" @save="(val, render) => $save(val, render, this.title)" :externalLink="externalLink"></mavon-editor>
+        <mavon-editor ref="md" class="md" placeholder="开始你的创作" v-model="content" :title="title" @imgAdd="$imgAdd" :imageClick="$imageClick" @change="(val, render) => $onchange(val, render, this)" @save="(val, render) => $save(val, render, this.title)" :externalLink="externalLink"></mavon-editor>
         <v-subheader>封面图</v-subheader>
         <v-container fluid grid-list-xs>
             <v-layout row wrap>
@@ -48,6 +48,7 @@ export default {
         return {
             title: '',
             content: '',
+            html: '',
             tags: [],
             coverPic: [],
             selected: {},
@@ -74,6 +75,7 @@ export default {
         publishContent() {
             return {
                 content: this.content,
+                html: this.html,
                 tags: this.tags,
                 coverPic: this.coverPic
             };
@@ -82,6 +84,9 @@ export default {
     methods: {
         onClickCoverPic(idx) {
             this.coverPic.splice(idx, 1);
+        },
+        $onchange(val, render, context) {
+            context.html = render;
         },
         $imgAdd(pos, $file) {
             const promise = $file.miniurl
@@ -139,7 +144,15 @@ export default {
     },
     mounted() {
         this.formNode = this.$refs.form;
-    }
+    },
+    beforeRouteLeave(to, from, next) {
+        if (this.title || this.content.length) {
+            if (!window.confirm('你未保存的内容即将丢失！你确定离开吗？')) {
+                return next(false);
+            }
+        }
+        return next();
+    },
 }
 </script>
 
