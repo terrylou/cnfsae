@@ -22,12 +22,15 @@ export const getConfig = value => configs.findOne({
     };
 });
 
-export const getConfigs = () => configs.find().then(configs => configs.map(conf => {
-    return {
-        name: conf.text,
-        source: conf.value
-    };
-}));
+export const getConfigs = () => configs.find().then(configs => configs.reduce((result, conf) => {
+    if (conf.appId && conf.appToken) {
+        result.push({
+            name: conf.text,
+            source: conf.value
+        });
+    }
+    return result;
+}, []));
 
 const getBucket = value => buckets.findOne({
     value
@@ -184,13 +187,7 @@ export const publish = {
     },
     video: {
         qq(body) {
-            let {title, content, coverPic, tags} = body;
-            coverPic.slice(3);
-            const coverType = coverPic.length > 2 ? 3 : 1;
-            coverPic = coverPic.join(',');
-            const tag = tags.join(',');
-            return getAuth.qq().then(token => axios.post(article.qq(token, title, content, coverPic, coverType, tag))
-            .then(responseHandler.qq));
+
         },
         baidu(body) {
 
@@ -198,7 +195,14 @@ export const publish = {
     },
     article: {
         qq(body) {
-
+            let {title, content, coverPic, tags} = body;
+            coverPic.slice(3);
+            const coverType = coverPic.length > 2 ? 3 : 1;
+            coverPic = coverPic.join(',');
+            const tag = tags.join(',');
+            return getAuth.qq()
+                .then(token => axios.post(article.qq(token, title, content, coverPic, coverType, tag))
+                .then(responseHandler.qq));
         },
         baidu(body) {
             let {title, html, coverPic} = body;

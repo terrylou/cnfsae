@@ -33,7 +33,8 @@ const bucketList = [{
     value: 'qiniu'
 }];
 
-const chnList = [{
+const chnList = [
+    {
         text: '百家号',
         value: 'baidu'
     },
@@ -41,10 +42,18 @@ const chnList = [{
         text: '企鹅号',
         value: 'qq'
     },
-    // {
-    //     text: '头条号',
-    //     value: 'toutiao'
-    // }
+    {
+        text: '网易号',
+        value: 'wangyi'
+    },
+    {
+        text: '微信号',
+        value: 'wechat'
+    },
+    {
+        text: '头条号',
+        value: 'toutiao'
+    }
 ];
 
 const getValue = list => list.reduce((obj, itm) => Object.assign(obj, {[itm.value]: ''}), {});
@@ -82,13 +91,9 @@ export default {
         fetchData() {
             const params = [getValue(this.chnParam), getValue(this.bktParam)];
             return window.Promise.all([configs.find({}).then(chns =>
-                this.channels = chns.length
-                    ? chns
-                    : chnList.map(chn => Object.assign({}, chn, params[0], chns.find(ele => ele.value === chn.value)))
+                this.channels = chnList.map(chn => Object.assign({}, chn, params[0], chns.find(ele => ele.value === chn.value)))
             ), buckets.find({}).then(bkts =>
-                this.buckets = bkts.length
-                    ? bkts
-                    : bucketList.map(bkt => Object.assign({}, bkt, params[1], bkts.find(ele => ele.value === bkt.value)))
+                this.buckets = bucketList.map(bkt => Object.assign({}, bkt, params[1], bkts.find(ele => ele.value === bkt.value)))
             )])
         },
         onSave() {

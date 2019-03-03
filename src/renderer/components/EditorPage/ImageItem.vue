@@ -3,15 +3,15 @@
     <v-container fill-height fluid pa-2>
         <v-layout fill-height>
             <v-flex xs2 v-if="!isNewItem" @click="toggleCover">
-                <v-badge :color="badgeColor" left overlap style="width: 100%">
+                <div class="text-xs-center">
+                <v-badge :color="badgeColor" overlap style="width:80%;" class="v-badge--center">
                     <template v-slot:badge>
-                        <v-icon dark small>
+                        <v-icon dark small @click="">
                             done
                         </v-icon>
                     </template>
                     <v-img contain height="100" :src="item.src"></v-img>
                 </v-badge>
-                <div class="text-xs-center">
                     <v-btn depressed dark small color="red" @click="onRemove">删除</v-btn>
                 </div>
             </v-flex>
@@ -31,6 +31,14 @@
 </v-card>
 </template>
 
+<style>
+.v-badge--center .v-badge__badge {
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+}
+</style>
+
 <script>
 import {
     remote
@@ -46,7 +54,7 @@ const filters = [{
 
 export default {
     name: 'image-item',
-    props: ['isNewItem', 'idx', 'item', 'coverPic'],
+    props: ['isNewItem', 'idx', 'item', 'coverPic', 'list'],
     computed: {
         badgeColor() {
             return ~this.coverPic.indexOf(this.item.src) ? 'purple' : 'grey';
