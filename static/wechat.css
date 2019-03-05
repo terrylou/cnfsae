@@ -1,23 +1,23 @@
-b,
-em,
-i,
-strong,
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-blockquote,
-q,
-table {
-    font-family: -apple-system-font, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
-    --highlight-color: #009688;
-}
+/*
+    依赖：
+    1. Markdown编辑器（需支持自定义样式）：Typora：https://typora.io/
+    2. 图片自动上传图床：Mac：iPic (AppStore搜索下载) / Windows：MPic (http://mpic.lzhaofu.cn/)
+    3. 页面样式文件（即本文件）：https://gist.githubusercontent.com/terrylou/e0555dd04cc87ea5daf3022b158703f8/raw/71e03bdab1f8f65bd96c6ef2a10df1bfca2c4dc6/wechat.css
+
+    配置方式（以Typora为例）：
+    0. (可选) 修改本文件27行--highlight-color后的值，自定义主题色
+    1. 打开Typora，进入偏好设置 - 通用，选择打开主题文件夹，将本CSS样式文件放入该文件夹下
+    3. 将图片上传至在线图床后插入文章内，以方便微信公众平台自动同步
+    3. 按照Markdown对文档进行必要格式化后，将渲染出的内容复制粘贴到微信公众平台编辑器内
+
+    参考：
+    1. Markdown基本语法：https://guides.github.com/pdfs/markdown-cheatsheet-online.pdf
+    2. 微信公众平台正文样式代码：http://hongbowei.com/using-markdown-css-to-complete-typesetting.html
+*/
 
 .markdown-here-wrapper {
     font-size: 16px;
+    font-family: -apple-system-font, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
     line-height: 1.8em;
     letter-spacing: .1em;
 }
@@ -25,7 +25,7 @@ table {
 pre,
 code {
     font-size: 14px;
-    font-family: Roboto, 'Courier New', Consolas, Inconsolata, Courier, monospace;
+    font-family: Roboto, "Courier New", Consolas, Inconsolata, Courier, monospace;
     margin: auto 5px;
 }
 
@@ -48,31 +48,32 @@ pre {
 }
 
 pre code {
-    display: block !important;
-    overflow: auto;
-    padding: 1px 1px;
-    border-radius: 3px;
     white-space: pre;
+    overflow: auto;
+    border-radius: 3px;
+    padding: 1px 1px;
+    display: block !important;
 }
 
 strong,
 b {
-    color: var(--highlight-color);
+    color: #BF360C;
 }
 
 em,
 i {
-    color: var(--highlight-color);
+    color: #009688;
 }
 
 hr {
-    margin: 1.5em auto;
     border: 1px solid #BF360C;
+    margin: 1.5em auto;
 }
 
 p {
     margin: 1.5em 10px !important;
     font-size: 15px;
+    font-family: -apple-system-font, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
     color: #3a3a3a;
 }
 
@@ -89,7 +90,6 @@ ol {
 ul,
 ol {
     padding-left: 15px;
-    font-family: -apple-system-font, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
 }
 
 li {
@@ -118,7 +118,7 @@ dl {
 
 dl dt {
     font-size: 1em;
-    font-weight: 700;
+    font-weight: bold;
     font-style: italic;
 }
 
@@ -129,7 +129,7 @@ dl dd {
 
 blockquote,
 q {
-    border-left: 2px solid var(--highlight-color);
+    border-left: 2px solid #009688;
     padding: 0 10px;
     color: #777;
     quotes: none;
@@ -150,8 +150,8 @@ h4,
 h5 {
     margin: 20px 0 10px;
     padding: 0;
-    font-weight: 900 !important;
-    color: var(--highlight-color) !important;
+    font-style: bold !important;
+    color: #009688 !important;
     text-align: center !important;
     margin: 1.5em 5px !important;
     padding: 0.5em 1em !important;
@@ -178,6 +178,7 @@ h4 {
 h6 {
     margin: 1.5em 10px !important;
     font-size: 13px;
+    font-family: -apple-system-font, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
     color: #999;
 }
 
@@ -218,10 +219,10 @@ table tr td {
 }
 
 table tr th {
-    font-weight: 700;
+    font-weight: bold;
     color: #eee;
-    border: 1px solid var(--highlight-color);
-    background-color: var(--highlight-color);
+    border: 1px solid #009688;
+    background-color: #009688;
 }
 
 center {
@@ -229,6 +230,4 @@ center {
     color: #999;
 }
 
-img {
-    max-width: 100%;
-}
+

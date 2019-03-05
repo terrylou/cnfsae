@@ -89,18 +89,20 @@ export default {
             context.html = render;
         },
         $imgAdd(pos, $file) {
-            const promise = $file.miniurl
+            if (/^image/.test($file.type)) {
+                const promise = $file.miniurl
                 ? qiniuB64Upload($file.miniurl.split(',')[1])
                 : qiniuUpload($file.path);
-            promise.then(res => {
-                const {
-                    key,
-                    domain
-                } = res;
-                return `${domain}/${key}`;
-            }).then(url => {
-                this.$refs.md.$img2Url(pos, url);
-            });
+                promise.then(res => {
+                    const {
+                        key,
+                        domain
+                    } = res;
+                    return `${domain}/${key}`;
+                }).then(url => {
+                    this.$refs.md.$img2Url(pos, url);
+                });
+            }
         },
         $imageClick(node) {
             const src = node.getAttribute('src');
