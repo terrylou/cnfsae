@@ -9,11 +9,14 @@ import {
 
 export default {
     name: 'save-draft-btn',
-    props: ['id', 'title', 'data', 'type'],
+    props: ['id', 'title', 'data', 'type', 'contentSaved'],
     methods: {
         onSave() {
             saveDraft(this.id, this.type, this.title, this.data)
-                .then(num => this.$EventBus.$emit('success', `保存了${num}篇内容`))
+                .then(articleId => {
+                    this.$emit('contentSaved', articleId);
+                    this.$EventBus.$emit('success', `保存了1篇内容`);
+                })
                 .catch(err => this.$EventBus.$emit('error', err));
         }
     }

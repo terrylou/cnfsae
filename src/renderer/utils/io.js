@@ -47,9 +47,10 @@ const getBucket = value => buckets.findOne({
 
 export const saveDraft = (id, type, title, data) => {
     if (id) {
-        return posts.update({'_id': id}, {$set: Object.assign({type, title, updateTime: +new Date()}, data)});
+        return posts.update({'_id': id}, {$set: Object.assign({type, title, updateTime: +new Date()}, data)})
+            .then(() => id);
     }
-    return posts.insert(Object.assign({type, title, createTime: +new Date()}, data)).then(res => 1);
+    return posts.insert(Object.assign({type, title, createTime: +new Date()}, data)).then(res => res._id);
 };
 
 export const publishContent = (id, type, title, acticleId, data) => {
