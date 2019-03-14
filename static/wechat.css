@@ -230,4 +230,6 @@ center {
     color: #999;
 }
 
-
+img {
+    max-width: 100%;
+}

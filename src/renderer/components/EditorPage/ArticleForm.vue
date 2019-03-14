@@ -15,7 +15,7 @@
         <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
         <div class="text-xs-center">
             <sources :selected="selected"></sources>
-            <save-draft-btn :id="id" :title="title" type="article" :data="publishContent"></save-draft-btn>
+            <save-draft-btn :id="articleId" :title="title" type="article" :data="publishContent" @contentSaved="contentSaved"></save-draft-btn>
             <publish-btn :form="formNode" :id="id" :title="title" type="article" :data="publishContent" :sources="selected" :draft="publishContent"></publish-btn>
         </div>
     </v-form>
@@ -46,6 +46,7 @@ export default {
     },
     data() {
         return {
+            articleId: this.$props.id,
             title: '',
             content: '',
             html: '',
@@ -85,6 +86,9 @@ export default {
         onClickCoverPic(idx) {
             this.coverPic.splice(idx, 1);
         },
+        contentSaved(id) {
+            this.articleId = id;
+        },
         $onchange(val, render, context) {
             context.html = render;
         },
@@ -98,7 +102,7 @@ export default {
                         key,
                         domain
                     } = res;
-                    return `${domain}/${key}`;
+                    return `${domain}/${key}?imageView2/2/w/1000`;
                 }).then(url => {
                     this.$refs.md.$img2Url(pos, url);
                 });

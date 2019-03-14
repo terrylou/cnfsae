@@ -76,7 +76,7 @@ export default {
                                 domain
                             } = res;
                             data.push({
-                                src: `${domain}/${key}`,
+                                src: `${domain}/${key}?imageView2/2/w/1000`,
                                 desc: ''
                             });
                             return data;
