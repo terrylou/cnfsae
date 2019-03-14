@@ -16,6 +16,7 @@
                 <v-progress-circular v-if="uploading" size="96" indeterminate color="green" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
                     <span class="white--text">上传中</span>
                 </v-progress-circular>
+                <input ref="video" type="file" accept="video/*" @change="onVideoSelect" style="display: none"></input>
             </v-card>
         </v-flex>
         <v-flex xs6>
@@ -82,25 +83,24 @@ export default {
         }
     },
     methods: {
+        onVideoSelect(e) {
+            const files = e.target.files;
+            const file = files[0];
+            if (file) {
+                this.video.file = file;
+                this.uploading = true;
+                qiniuUpload(file.path).then(res => {
+                    const {key, domain} = res;
+                    this.video.src = `${domain}/${key}`;
+                    this.uploading = false;
+                }).catch(err => {
+                    this.uploading = false;
+                    this.$EventBus.$emit('error', err);
+                });
+            }
+        },
         onVideoClick() {
-            remote.dialog.showOpenDialog({
-                filters: videoFilters,
-                properties: ['openFile'],
-            }, filePath => {
-                if (filePath) {
-                    const path = filePath[0];
-                    this.uploading = true;
-                    this.video.path = path;
-                    qiniuUpload(path).then(res => {
-                        const {key, domain} = res;
-                        this.video.src = `${domain}/${key}`;
-                        this.uploading = false;
-                    }).catch(err => {
-                        this.uploading = false;
-                        this.$EventBus.$emit('error', err);
-                    });
-                }
-            });
+            this.$refs.video.click();
         },
         onImageClick() {
             remote.dialog.showOpenDialog({

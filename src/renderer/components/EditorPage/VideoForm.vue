@@ -37,7 +37,7 @@ export default {
             title: '',
             tags: [],
             video: {
-                path: '',
+                file: '',
                 src: '',
                 poster: '',
                 desc: ''
@@ -82,7 +82,9 @@ export default {
         if (this.id) {
             fetchDraft(this.id).then(item => {
                 this.title = item.title;
-                this.video = item.video;
+                if (item.video) {
+                    this.video.desc = item.video.desc;
+                }
                 this.tags = item.tags;
             });
         }

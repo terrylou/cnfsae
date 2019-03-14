@@ -9,8 +9,9 @@
             <v-list-tile-sub-title>{{ updateTime }}</v-list-tile-sub-title>
         </v-list-tile-content>
 
-        <v-list-tile-action v-if="editable">
-            <v-icon color="teal" @click="onEdit(item._id, item.type)">border_color</v-icon>
+        <v-list-tile-action>
+            <v-icon v-if="editable" color="teal" @click="onEdit(item._id, item.type)">border_color</v-icon>
+            <v-icon v-else color="teal" @click="onEdit(item._id, item.type)">restore</v-icon>
         </v-list-tile-action>
         <v-list-tile-action v-if="editable">
             <v-icon color="warning" @click="onDelete(item._id)">delete</v-icon>

@@ -1,12 +1,13 @@
 import {
     configs,
     buckets,
-    posts
+    posts,
+    tokens
 } from '../datastore';
 import fs from 'fs';
 import qiniu from 'qiniu';
 import axios from 'axios';
-import {auth, images, article, videos} from './urls';
+import {auth, images, article, videos, qqVideoClip} from './urls';
 
 const bucketName = 'cnfsae-editor';
 const domain = 'http://editor.cnfsae.com';
@@ -32,6 +33,8 @@ export const getConfigs = () => configs.find().then(configs => configs.reduce((r
     }
     return result;
 }, []));
+
+const getToken = media => tokens.findOne({media});
 
 const getBucket = value => buckets.findOne({
     value
@@ -148,13 +151,30 @@ const responseHandler = {
     }
 };
 
-const getMD5 = url => axios(url + '?qhash/md5').then(res => res.data.hash);
+const getMD5 = url => axios(url + '?qhash/md5').then(res => res.data);
+
+const getSHA1 = url => axios(url + '?qhash/sha1').then(res => res.data);
 
 const getAuth = {
-    qq() {
-        return getConfig('qq')
-            .then(({appId, appToken}) => axios.post(auth.qq(appId, appToken)))
-            .then(res => res.data.data.access_token);
+    async qq() {
+        const now = +new Date();
+        let token = await getToken('qq');
+        if (token && token.ts + token.expires_in * 1000 > now) {
+            return token.access_token;
+        }
+        try {
+            const {data: {code, msg, data}} = await getConfig('qq')
+                .then(({appId, appToken}) => axios.post(auth.qq(appId, appToken)));
+            if (!+code) {
+                const {access_token, expires_in} = data;
+                await tokens.insert({media: 'qq', access_token, expires_in, ts: +new Date()});
+                return access_token;
+            }
+            return window.Promise.reject(new Error(msg));
+        }
+        catch (e) {
+            return window.Promise.reject(new Error('请检查网络连接'));
+        }
     }
 };
 
@@ -190,25 +210,71 @@ export const publish = {
         }
     },
     video: {
-        qq(body) {
+        async qq(body) {
             const {title, video, tags} = body;
-            return getMD5(video.src).then(md5 => {
-                const tag = tags.join(' ');
-                let formData = new FormData();
-                // formData.append('media', fs.createReadStream('file://' + video.path));
-                // return getAuth.qq()
-                //     .then(token => axios({
-                //         method: 'post',
-                //         url: videos.qq(token, title, video, md5, tag),
-                //         data: formData,
-                //         config: {
-                //             headers: {'Content-Type': 'multipart/form-data'}
-                //         }
-                //     })).then(responseHandler.qq);
-            });
+            const {hash: md5} = await getMD5(video.src);
+            // const [{hash: md5, fsize}, {hash: sha}] = await window.Promise.all([getMD5(video.src), getSHA1(video.src)]);
+
+            const token = await getAuth.qq();
+
+            // const getTID = await axios.post(qqVideoClip.ready(token, fsize, sha, md5));
+            // const transactionId = getTID.data.data.transaction_id;
+            //
+            // const tag = tags.join(' ');
+            // let formData = new FormData();
+            // formData.append('transaction_id', transactionId);
+            // formData.append('access_token', token);
+            // formData.append('mediatrunk', video.file);
+            // formData.append('start_offset', 0);
+            // const {data: {code, msg}} = await axios.post(qqVideoClip.upload(token, transactionId), formData, {
+            //     headers: {'Content-Type': 'multipart/form-data'},
+            //     timeout: 30000
+            // });
+            // if (code) {
+            //     return window.Promise.reject(new Error(msg));
+            // }
+            // return window.Promise.resolve();
+
+            // return
+            //     .then(() => {
+            //         return getAuth.qq()
+            //             .then(token => axios.post(qqVideoClip.ready(token, fsize, sha, md5))
+            //                 .then(res => {
+            //                     let transactionId = res.data.data.transaction_id;
+            //                     const tag = tags.join(' ');
+            //                     let formData = new FormData();
+            //                     formData.append('mediatrunk', video.file);
+            //                     formData.append('start_offset', 0);
+            //                     return axios.post(qqVideoClip.upload(token, transactionId), formData, {
+            //                         headers: {'Content-Type': 'multipart/form-data'},
+            //                         timeout: 30000
+            //                     }).then();
+            //                 })
+            //         );
+            //
+            //     });
+            const tag = tags.join(' ');
+            let formData = new FormData();
+            formData.append('media', video.file);
+            return axios.post(videos.qq(token, title, video, md5, tag), formData, {
+                headers: {'Content-Type': 'multipart/form-data'},
+                timeout: 30000
+            }).then(responseHandler.qq);
+
+            // return getMD5(video.src).then({md5, fsize} => {
+            //     const tag = tags.join(' ');
+            //     let formData = new FormData();
+            //     formData.append('media', video.file);
+            //     return getAuth.qq()
+            //         .then(token => axios.post(videos.qq(token, title, video, md5, tag), formData, {
+            //             headers: {'Content-Type': 'multipart/form-data'},
+            //             timeout: 30000
+            //         })).then(responseHandler.qq);
+            // });
         },
         baidu(body) {
             let {title, video, tags} = body;
+            tags.slice(3);
             return getConfig('baidu').then(({
                 appId,
                 appToken

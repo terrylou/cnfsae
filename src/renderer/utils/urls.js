@@ -24,3 +24,12 @@ export const videos = {
     },
     baidu: 'https://baijiahao.baidu.com/builderinner/open/resource/video/publish'
 };
+
+export const qqVideoClip = {
+    ready(token, fsize, sha, md5) {
+        return `https://api.om.qq.com/video/clientuploadready?access_token=${token}&size=${fsize}&sha=${sha}&md5=${md5}`;
+    },
+    upload(token, transactionId) {
+        return 'http://api.om.qq.com/video/clientuploadtrunk';
+    }
+};

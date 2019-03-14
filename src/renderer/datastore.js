@@ -23,4 +23,10 @@ export const posts = Datastore.create({
     filename: path.join(remote.app.getPath('userData'), '/posts.db')
 });
 
+// Tokens
+export const tokens = Datastore.create({
+    autoload: true,
+    filename: path.join(remote.app.getPath('userData'), '/tokens.db')
+});
+
 export default posts;
