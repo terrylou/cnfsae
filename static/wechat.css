@@ -144,10 +144,7 @@ q::after {
 }
 
 h1,
-h2,
-h3,
-h4,
-h5 {
+h2 {
     margin: 20px 0 10px;
     padding: 0;
     font-style: bold !important;
@@ -155,6 +152,16 @@ h5 {
     text-align: center !important;
     margin: 1.5em 5px !important;
     padding: 0.5em 1em !important;
+}
+
+h3,
+h4,
+h5 {
+    margin: 1.5em 10px !important;
+    padding: 0 1em !important;
+    font-style: bold !important;
+    color: #009688 !important;
+    border-left: 5px solid #BF360C;
 }
 
 h1 {
@@ -232,4 +239,9 @@ center {
 
 img {
     max-width: 100%;
+}
+
+figcaption {
+    margin: 0 20px;
+    color: #999;
 }
