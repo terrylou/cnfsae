@@ -303,16 +303,17 @@ export const publish = {
                 .then(responseHandler.qq));
         },
         baidu(body) {
-            let {title, html, coverPic} = body;
+            let {title, html, coverPic, isOriginal, originUrl} = body;
             coverPic.slice(3);
             return getConfig('baidu').then(({
                 appId,
                 appToken
             }) => axios.post(article.baidu, {
+                title,
                 'app_id': appId,
                 'app_token': appToken,
-                'is_original': 1,
-                title,
+                'is_original': isOriginal ? 1 : 0,
+                'origin_url': isOriginal ? originUrl : '',
                 content: html,
                 'cover_images': JSON.stringify(coverPic.map(src => {
                     return {src};

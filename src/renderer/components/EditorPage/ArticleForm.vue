@@ -13,6 +13,7 @@
         </v-container>
         <p v-if="!coverPic.length" class="text-xs-center">正文添加图片后，可点击设置为封面图。</p>
         <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
+        <is-original-form :isOriginal.sync="isOriginal" :originUrl.sync="originUrl"></is-original-form>
         <div class="text-xs-center">
             <sources :selected="selected"></sources>
             <save-draft-btn :id="articleId" :title="title" type="article" :data="publishContent" @contentSaved="contentSaved"></save-draft-btn>
@@ -35,6 +36,7 @@ import {
 import Sources from './Sources.vue';
 import SaveDraftBtn from './SaveDraftBtn.vue';
 import PublishBtn from './PublishBtn.vue';
+import IsOriginalForm from './IsOriginalForm';
 
 export default {
     name: 'article-form',
@@ -42,7 +44,8 @@ export default {
     components: {
         sources: Sources,
         'save-draft-btn': SaveDraftBtn,
-        'publish-btn': PublishBtn
+        'publish-btn': PublishBtn,
+        'is-original-form': IsOriginalForm
     },
     data() {
         return {
@@ -52,6 +55,8 @@ export default {
             html: '',
             tags: [],
             coverPic: [],
+            isOriginal: true,
+            originUrl: '',
             selected: {},
             valid: true,
             formNode: {},
@@ -75,10 +80,13 @@ export default {
     computed: {
         publishContent() {
             return {
+                title: this.title,
                 content: this.content,
                 html: this.html,
                 tags: this.tags,
-                coverPic: this.coverPic
+                coverPic: this.coverPic,
+                isOriginal: this.isOriginal,
+                originUrl: this.originUrl
             };
         }
     },
