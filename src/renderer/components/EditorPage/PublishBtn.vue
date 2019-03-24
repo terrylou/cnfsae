@@ -10,10 +10,10 @@ import {
 } from '../../utils/io';
 
 export default {
-    props: ['id', 'type', 'title', 'data', 'form', 'draft', 'sources'],
+    props: ['id', 'type', 'data', 'form', 'draft', 'sources'],
     data() {
         return {
-            articleId: {}
+            articleIds: {}
         };
     },
     methods: {
@@ -27,7 +27,7 @@ export default {
                     break;
             }
             if (id) {
-                this.articleId[chn] = id;
+                this.articleIds[chn] = id;
             }
             return res;
         },
@@ -36,7 +36,7 @@ export default {
                 this.$EventBus.$emit('error', new Error('发布内容有误，请按提示完善后重新发布'));
                 return;
             }
-            let promise = saveDraft(this.id, this.type, this.title, this.draft);
+            let promise = saveDraft(this.id, this.type, this.draft);
             const sourceList = Object.keys(this.sources);
             if (!sourceList.length) {
                 this.$EventBus.$emit('error', new Error('请选择发布渠道'));
@@ -51,7 +51,7 @@ export default {
             });
             promise = promise
                 .then(res => {
-                    publishContent(this.id, this.type, this.title, this.articleId, this.draft)
+                    publishContent(this.id, this.type, this.articleIds, this.draft)
                     this.$EventBus.$emit('success', '发布成功');
                 })
                 .catch(err => {

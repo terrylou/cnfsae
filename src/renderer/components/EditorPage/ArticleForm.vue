@@ -1,23 +1,23 @@
 <template>
 <v-container>
     <v-form ref="form" v-model="valid">
-        <v-text-field label="文章标题" placeholder="标题" v-model="title" required :rules="rules.title" :counter="30"></v-text-field>
-        <mavon-editor ref="md" class="md" placeholder="开始你的创作" v-model="content" :title="title" @imgAdd="$imgAdd" :imageClick="$imageClick" @change="(val, render) => $onchange(val, render, this)" @save="(val, render) => $save(val, render, this.title)" :externalLink="externalLink"></mavon-editor>
+        <v-text-field label="文章标题" placeholder="标题" v-model="content.title" required :rules="rules.title" :counter="30"></v-text-field>
+        <mavon-editor ref="md" class="md" placeholder="开始你的创作" v-model="content.content" :title="content.title" @imgAdd="$imgAdd" :imageClick="$imageClick" @change="(val, render) => $onchange(val, render, this)" @save="(val, render) => $save(val, render, this.content.title)" :externalLink="externalLink"></mavon-editor>
         <v-subheader>封面图</v-subheader>
         <v-container fluid grid-list-xs>
             <v-layout row wrap>
-            <v-flex xs2 v-if="coverPic.length" v-for="(img, idx) in coverPic" :key="idx">
+            <v-flex xs2 v-if="content.coverPic.length" v-for="(img, idx) in content.coverPic" :key="idx">
                 <v-img :src="img" aspect-ratio="1.5" @click="onClickCoverPic(idx)"></v-img>
             </v-flex>
         </v-layout>
         </v-container>
-        <p v-if="!coverPic.length" class="text-xs-center">正文添加图片后，可点击设置为封面图。</p>
-        <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
-        <is-original-form :isOriginal.sync="isOriginal" :originUrl.sync="originUrl"></is-original-form>
+        <p v-if="!content.coverPic.length" class="text-xs-center">正文添加图片后，可点击设置为封面图。</p>
+        <v-combobox v-model="content.tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
+        <is-original-form :isOriginal.sync="content.isOriginal" :originUrl.sync="content.originUrl" :originalAuthor="content.originalAuthor"></is-original-form>
         <div class="text-xs-center">
             <sources :selected="selected"></sources>
-            <save-draft-btn :id="articleId" :title="title" type="article" :data="publishContent" @contentSaved="contentSaved"></save-draft-btn>
-            <publish-btn :form="formNode" :id="id" :title="title" type="article" :data="publishContent" :sources="selected" :draft="publishContent"></publish-btn>
+            <save-draft-btn :id="articleId" type="article" :data="content" @contentSaved="contentSaved"></save-draft-btn>
+            <publish-btn :form="formNode" :id="articleId" type="article" :data="content" :sources="selected" :draft="content"></publish-btn>
         </div>
     </v-form>
 </v-container>
@@ -50,16 +50,19 @@ export default {
     data() {
         return {
             articleId: this.$props.id,
-            title: '',
-            content: '',
-            html: '',
-            tags: [],
-            coverPic: [],
-            isOriginal: true,
-            originUrl: '',
             selected: {},
             valid: true,
             formNode: {},
+            content: {
+                title: '',
+                content: '',
+                html: '',
+                tags: [],
+                coverPic: [],
+                isOriginal: true,
+                originUrl: '',
+                originalAuthor: ''
+            },
             rules: {
                 title: [
                     v => !!v || '标题是必须的',
@@ -77,22 +80,9 @@ export default {
             }
         };
     },
-    computed: {
-        publishContent() {
-            return {
-                title: this.title,
-                content: this.content,
-                html: this.html,
-                tags: this.tags,
-                coverPic: this.coverPic,
-                isOriginal: this.isOriginal,
-                originUrl: this.originUrl
-            };
-        }
-    },
     methods: {
         onClickCoverPic(idx) {
-            this.coverPic.splice(idx, 1);
+            this.content.coverPic.splice(idx, 1);
         },
         contentSaved(id) {
             this.articleId = id;
@@ -118,11 +108,11 @@ export default {
         },
         $imageClick(node) {
             const src = node.getAttribute('src');
-            const idx = this.coverPic.indexOf(src);
+            const idx = this.content.coverPic.indexOf(src);
             if (!~idx) {
-                this.coverPic.push(src);
+                this.content.coverPic.push(src);
             } else {
-                this.coverPic.splice(idx, 1);
+                this.content.coverPic.splice(idx, 1);
             }
         },
         $save(val, render, title) {
@@ -147,19 +137,14 @@ export default {
     },
     created() {
         if (this.id) {
-            fetchDraft(this.id).then(item => {
-                this.title = item.title;
-                this.content = item.content;
-                this.coverPic = item.coverPic;
-                this.tags = item.tags;
-            });
+            fetchDraft(this.id).then(item => this.content = Object.assign({}, this.content, item));
         }
     },
     mounted() {
         this.formNode = this.$refs.form;
     },
     beforeRouteLeave(to, from, next) {
-        if (this.title || this.content.length) {
+        if (this.content.title || this.content.content) {
             if (!window.confirm('你未保存的内容即将丢失！你确定离开吗？')) {
                 return next(false);
             }

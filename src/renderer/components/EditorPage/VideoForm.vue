@@ -1,13 +1,13 @@
 <template>
 <v-container>
     <v-form ref="form" v-model="valid">
-        <v-text-field label="视频标题" placeholder="标题" v-model="title" required :rules="rules.title" :counter="30"></v-text-field>
-        <video-item :video="video"></video-item>
-        <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
+        <v-text-field label="视频标题" placeholder="标题" v-model="content.title" required :rules="rules.title" :counter="30"></v-text-field>
+        <video-item :video="content"></video-item>
+        <v-combobox v-model="content.tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
         <div class="text-xs-center">
             <sources :selected="selected"></sources>
-            <save-draft-btn :id="id" :title="title" type="video" :data="publishContent" @contentSaved="contentSaved"></save-draft-btn>
-            <publish-btn :form="formNode" :id="id" :title="title" type="video" :data="publishContent" :sources="selected" :draft="publishContent"></publish-btn>
+            <save-draft-btn :id="articleId" type="video" :data="content" @contentSaved="contentSaved"></save-draft-btn>
+            <publish-btn :form="formNode" :id="articleId" type="video" :data="content" :sources="selected" :draft="content"></publish-btn>
         </div>
     </v-form>
 </v-container>
@@ -35,9 +35,9 @@ export default {
     data() {
         return {
             articleId: this.$props.id,
-            title: '',
-            tags: [],
-            video: {
+            content: {
+                title: '',
+                tags: [],
                 file: '',
                 src: '',
                 poster: '',
@@ -58,23 +58,13 @@ export default {
             }
         };
     },
-    computed: {
-        publishContent() {
-            return {
-                title: this.title,
-                content: this.content,
-                tags: this.tags,
-                video: this.video
-            };
-        }
-    },
     methods: {
         contentSaved(id) {
             this.articleId = id;
         }
     },
     beforeRouteLeave(to, from, next) {
-        if (this.title || this.content) {
+        if (this.content.title || this.content.content) {
             if (!window.confirm('你未保存的内容即将丢失！你确定离开吗？')) {
                 return next(false);
             }
@@ -83,13 +73,7 @@ export default {
     },
     created() {
         if (this.id) {
-            fetchDraft(this.id).then(item => {
-                this.title = item.title;
-                if (item.video) {
-                    this.video.desc = item.video.desc;
-                }
-                this.tags = item.tags;
-            });
+            fetchDraft(this.id).then(item => this.content = Object.assign({}, this.content, item));
         }
     },
     mounted() {

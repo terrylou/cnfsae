@@ -48,20 +48,20 @@ const getBucket = value => buckets.findOne({
     };
 });
 
-export const saveDraft = (id, type, title, data) => {
+export const saveDraft = (id, type, data) => {
     if (id) {
-        return posts.update({'_id': id}, {$set: Object.assign({type, title, updateTime: +new Date()}, data)})
+        return posts.update({'_id': id}, {$set: Object.assign({type, updateTime: +new Date()}, data)})
             .then(() => id);
     }
-    return posts.insert(Object.assign({type, title, createTime: +new Date()}, data)).then(res => res._id);
+    return posts.insert(Object.assign({type, createTime: +new Date()}, data)).then(res => res._id);
 };
 
-export const publishContent = (id, type, title, acticleId, data) => {
+export const publishContent = (id, type, acticleIds, data) => {
     const now = +new Date();
     if (id) {
-        return posts.update({'_id': id}, {$set: Object.assign({type, title, publishTime: now, acticleId}, data)});
+        return posts.update({'_id': id}, {$set: Object.assign({type, publishTime: now, acticleIds}, data)});
     }
-    return posts.insert(Object.assign({type, title, createTime: now, publishTime: now, acticleId}, data))
+    return posts.insert(Object.assign({type, createTime: now, publishTime: now, acticleIds}, data))
         .then(res => 1);
 };
 
@@ -293,13 +293,15 @@ export const publish = {
     },
     article: {
         qq(body) {
-            let {title, content, coverPic, tags} = body;
+            let {title, content, coverPic, tags, isOriginal, originUrl, originalAuthor} = body;
             coverPic.slice(3);
             const coverType = coverPic.length > 2 ? 3 : 1;
             coverPic = coverPic.join(',');
             const tag = tags.join(',');
             return getAuth.qq()
-                .then(token => axios.post(article.qq(token, title, content, coverPic, coverType, tag))
+                .then(token => axios.post(article.qq({
+                    token, title, content, coverPic, coverType, tag, isOriginal, originUrl, originalAuthor
+                }))
                 .then(responseHandler.qq));
         },
         baidu(body) {

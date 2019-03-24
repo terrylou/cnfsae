@@ -1,18 +1,18 @@
 <template>
 <v-container>
     <v-form ref="form" v-model="valid">
-        <v-text-field label="图集标题" placeholder="标题" v-model="title" required :rules="rules.title" :counter="30"></v-text-field>
+        <v-text-field label="图集标题" placeholder="标题" v-model="content.title" required :rules="rules.title" :counter="30"></v-text-field>
         <div>
-            <draggable v-model="content" @start="drag=true" @end="drag=false">
-                <image-item v-for="(item, idx) in content" :list="content" :item="item" :key="idx" :idx="idx" :coverPic="coverPic" @onItemRemove="onItemRemove"></image-item>
+            <draggable v-model="content.content" @start="drag=true" @end="drag=false">
+                <image-item v-for="(item, idx) in content.content" :list="content.content" :item="item" :key="idx" :idx="idx" :coverPic="content.coverPic" @onItemRemove="onItemRemove"></image-item>
             </draggable>
-            <image-item :idx="content.length" :isNewItem="true" @onItemAdd="onItemAdd"></image-item>
+            <image-item :idx="content.content.length" :isNewItem="true" @onItemAdd="onItemAdd"></image-item>
         </div>
-        <v-combobox v-model="tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
+        <v-combobox v-model="content.tags" small-chips multiple hide-no-data deletable-chips label="标签" required :rules="rules.tags"></v-combobox>
         <div class="text-xs-center">
             <sources :selected="selected"></sources>
-            <save-draft-btn :id="id" :title="title" type="image" :data="draftContent" @contentSaved="contentSaved"></save-draft-btn>
-            <publish-btn :form="formNode" :id="id" :title="title" type="image" :data="publishContent" :sources="selected" :draft="draftContent"></publish-btn>
+            <save-draft-btn :id="articleId" type="image" :data="content" @contentSaved="contentSaved"></save-draft-btn>
+            <publish-btn :form="formNode" :id="articleId" type="image" :data="publishContent" :sources="selected" :draft="content"></publish-btn>
         </div>
     </v-form>
 </v-container>
@@ -39,36 +39,28 @@ export default {
         'publish-btn': PublishBtn
     },
     computed: {
-        draftContent() {
-            return {
-                content: JSON.stringify(this.content),
-                tags: this.tags,
-                coverPic: this.coverPic
-            };
-        },
         publishContent() {
-            return {
-                title: this.title,
-                content: this.content,
-                tags: this.tags,
-                coverPic: this.coverPic.length
-                    ? this.coverPic
-                    : this.content.reduce((pics, itm, idx) => {
+            return Object.assign({}, this.content, {
+                coverPic: this.content.coverPic.length
+                    ? this.content.coverPic
+                    : this.content.content.reduce((pics, itm, idx) => {
                         if (idx < 3) {
                             pics.push(itm.src);
                         }
                         return pics;
                     }, [])
-            };
+            });
         }
     },
     data() {
         return {
             articleId: this.$props.id,
-            title: '',
-            content: [],
-            tags: [],
-            coverPic: [],
+            content: {
+                title: '',
+                content: [],
+                tags: [],
+                coverPic: []
+            },
             selected: {},
             valid: true,
             formNode: {},
@@ -89,14 +81,14 @@ export default {
             this.articleId = id;
         },
         onItemAdd(key, content) {
-            this.content.splice(key, 0, ...content);
+            this.content.content.splice(key, 0, ...content);
         },
         onItemRemove(key) {
-            this.content.splice(key, 1);
+            this.content.content.splice(key, 1);
         }
     },
     beforeRouteLeave(to, from, next) {
-        if (this.title || this.content.length) {
+        if (this.content.title || this.content.content.length) {
             if (!window.confirm('你未保存的内容即将丢失！你确定离开吗？')) {
                 return next(false);
             }
@@ -105,12 +97,8 @@ export default {
     },
     created() {
         if (this.id) {
-            fetchDraft(this.id).then(item => {
-                this.title = item.title;
-                this.content = JSON.parse(item.content);
-                this.coverPic = item.coverPic;
-                this.tags = item.tags;
-            });
+            fetchDraft(this.id).then(item =>
+                this.content = Object.assign({}, this.content, item));
         }
     },
     mounted() {
